@@ -195,8 +195,7 @@ rules belong in services/domain types, and SQL belongs in repository classes.
   statuses.
 - Future review activity should be recorded as append-only learning events; the
   current status is a derived or cached current-state view.
-- Existing source scheduling fields and provenance should remain available for
-  auditing until an explicit retention decision is made.
+- Catalogue provenance should remain available for auditing.
 
 Initial status vocabulary:
 

@@ -6,7 +6,6 @@ React + TypeScript vocabulary browser backed by a server-side Fastify API and Po
 
 - Node.js 22.13.x or 24+
 - PostgreSQL 14+
-- The source ReWord SQLite dictionary
 
 ## Environment
 
@@ -17,7 +16,6 @@ DATABASE_URL=postgresql://user:password@localhost:5432/vocabulary
 PORT=3001
 MCP_API_TOKEN=generate-with-npm-run-mcp-token
 MCP_API_PORT=3102
-SOURCE_SQLITE=/absolute/path/to/reword_en.sqlite
 ```
 
 `.env` and `.env.*` are ignored by Git; `.env.example` is the only exception and contains placeholders only. Do not use a `VITE_` prefix for `DATABASE_URL`, because Vite exposes such variables to browser code.
@@ -26,21 +24,13 @@ SOURCE_SQLITE=/absolute/path/to/reword_en.sqlite
 
 ```bash
 npm install
-npm run db:setup
+npm run db:migrate
 ```
 
-`db:setup` applies pending migrations and runs the idempotent import. It imports these source categories:
-
-- `oxford3000_a1`
-- `oxford3000_a2`
-- `oxford3000_b1`
-- `oxford3000_b2`
-- `oxford5000_b2`
-- `oxford5000_c1`
-
-The importer refuses to proceed unless it finds the expected 5,639 category links. Re-running it updates source-backed data without creating duplicate headwords, senses, translations, progress rows, or reconciliation items.
-
-The database migrations also add the 57 official Oxford B1–C1 entries that were absent from those SQLite categories. Oxford's part-of-speech and CEFR distinctions expand them to 60 catalogue senses. They use `oxford_official_wordlist` provenance, begin with `new` learning status, and leave definitions, translations, and transcriptions empty until approved data is supplied.
+The application now treats PostgreSQL as its vocabulary source of truth. The retired SQLite
+importer is not part of setup or runtime. Migrations update the schema and preserve existing
+catalogue rows; provision a PostgreSQL backup or approved seed when creating another complete
+environment.
 
 ## Run locally
 
@@ -67,9 +57,7 @@ npm run dev:web
 | Command              | Purpose                                                                    |
 | -------------------- | -------------------------------------------------------------------------- |
 | `npm run db:migrate` | Apply unapplied SQL migrations transactionally.                            |
-| `npm run db:import`  | Import or refresh SQLite vocabulary data.                                  |
-| `npm run db:setup`   | Run migrations followed by the import.                                     |
-| `npm test`           | Run transformation tests.                                                  |
+| `npm test`           | Run server tests.                                                          |
 | `npm run lint`       | Run ESLint.                                                                |
 | `npm run build`      | Type-check the server and client, then create the production client build. |
 | `npm run mcp:token`  | Generate the local MCP proxy credential without printing it.               |
@@ -101,7 +89,7 @@ GET /api/words?q=sight&level=B1&status=learned&partOfSpeech=noun&language=ru&lim
 
 Supported query parameters:
 
-- `q`: case-insensitive headword prefix, at most 100 characters
+- `q`: case-insensitive headword substring, at most 100 characters; exact and prefix matches rank first
 - `level`: `A1`, `A2`, `B1`, `B2`, `C1`, or `C2`
 - `status`: `new`, `learning`, `reviewing`, `learned`, `known`, or `suspended`
 - `partOfSpeech`: normalized grammatical class such as `noun` or `verb`
@@ -162,24 +150,18 @@ The MCP instructions tell the model to read a sense before changing it and never
 - `sense_progress` stores the current single-learner state for each sense.
 - `review_events` is the append-only home for future study activity.
 - `assistant_changes` is the audit trail for updates made through the protected MCP proxy.
-- `source_import_records`, `sense_sources`, and `import_runs` preserve provenance and raw legacy scheduling evidence without shaping the application model.
-- `reconciliation_items` contains unresolved source anomalies, currently the three multi-level SQLite ambiguities. The former 57 official B1–C1 gaps are now first-class catalogue senses.
-- `import_issues` records sanitized row-level import warnings or errors.
+- `source_import_records`, `sense_sources`, and `import_runs` preserve historical catalogue provenance without shaping the application model.
+- `reconciliation_items` contains unresolved catalogue anomalies. The former 57 official B1–C1 gaps are now first-class catalogue senses.
+- `import_issues` retains historical row-level import warnings or errors.
 
 Definitions remain `NULL` and collocations remain empty until an approved source supplies them. They are never inferred from Russian translations or example sentences.
 
-## Learning status mapping
+## Learning statuses
 
-| Imported source state   | Application status |
-| ----------------------- | ------------------ |
-| Not started             | `new`              |
-| Active learning steps   | `learning`         |
-| Learned through review  | `learned`          |
-| Marked as already known | `known`            |
-
-The application also supports `reviewing` and `suspended` for future study workflows. Progress is stored per sense so one meaning can be known while another meaning of the same spelling remains new.
-
-The three source records linked to two CEFR levels (`positive`, `cream`, and the container sense of `can`) become provisional level-specific senses. Their original status remains in source provenance; their study status starts as `new` with origin `unresolved`. They are excluded from ordinary word searches until reviewed.
+The application stores explicit `new`, `learning`, `reviewing`, `learned`, `known`, and
+`suspended` statuses in PostgreSQL. Progress is stored per sense so one meaning can be known
+while another meaning of the same spelling remains new. Provisional senses with
+`review_status = 'needs_review'` remain excluded from ordinary word searches until reviewed.
 
 ## Migrations
 

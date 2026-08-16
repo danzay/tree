@@ -152,13 +152,21 @@ export function buildApp(pool: pg.Pool): FastifyInstance {
     const query = parsed.data
     const values: unknown[] = [query.language]
     const filters: string[] = query.includeNeedsReview ? [] : [`s.review_status <> 'needs_review'`]
+    const ordering: string[] = []
     const parameter = (value: unknown) => {
       values.push(value)
       return `$${values.length}`
     }
 
     if (query.q) {
-      filters.push(`strpos(h.normalized_word, ${parameter(normalizeHeadword(query.q))}) = 1`)
+      const searchParameter = parameter(normalizeHeadword(query.q))
+      filters.push(`strpos(h.normalized_word, ${searchParameter}) > 0`)
+      ordering.push(`CASE
+        WHEN h.normalized_word = ${searchParameter} THEN 0
+        WHEN h.normalized_word = 'to ' || ${searchParameter} THEN 1
+        WHEN strpos(h.normalized_word, ${searchParameter}) = 1 THEN 2
+        ELSE 3
+      END`)
     }
 
     if (query.level) {
@@ -178,12 +186,13 @@ export function buildApp(pool: pg.Pool): FastifyInstance {
     }
 
     const where = filters.length ? `WHERE ${filters.join(' AND ')}` : ''
+    const orderBy = [...ordering, 'h.normalized_word', 's.sense_order', 's.id'].join(', ')
     const limitParameter = parameter(query.limit)
     const offsetParameter = parameter(query.offset)
     const result = await pool.query<WordRow>(
       `${SELECT_WORD_FIELDS}
        ${where}
-       ORDER BY h.normalized_word, s.sense_order, s.id
+       ORDER BY ${orderBy}
        LIMIT ${limitParameter} OFFSET ${offsetParameter}`,
       values,
     )
