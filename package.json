@@ -14,6 +14,8 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "mcp": "node --env-file=.env --import tsx server/mcp.ts",
+    "mcp:http": "node --env-file=.env --import tsx server/mcp-http.ts",
+    "mcp:http:smoke": "node --env-file=.env --import tsx server/scripts/mcp-http-smoke.ts",
     "mcp:smoke": "node --env-file=.env --import tsx server/scripts/mcp-smoke.ts",
     "mcp:token": "node --import tsx server/scripts/ensure-mcp-token.ts",
     "preview": "vite preview",

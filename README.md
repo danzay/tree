@@ -16,6 +16,8 @@ DATABASE_URL=postgresql://user:password@localhost:5432/vocabulary
 PORT=3001
 MCP_API_TOKEN=generate-with-npm-run-mcp-token
 MCP_API_PORT=3102
+MCP_HTTP_HOST=127.0.0.1
+MCP_HTTP_PORT=3103
 ```
 
 `.env` and `.env.*` are ignored by Git; `.env.example` is the only exception and contains placeholders only. Do not use a `VITE_` prefix for `DATABASE_URL`, because Vite exposes such variables to browser code.
@@ -54,16 +56,18 @@ npm run dev:web
 
 ## Commands
 
-| Command              | Purpose                                                                    |
-| -------------------- | -------------------------------------------------------------------------- |
-| `npm run db:migrate` | Apply unapplied SQL migrations transactionally.                            |
-| `npm test`           | Run server tests.                                                          |
-| `npm run lint`       | Run ESLint.                                                                |
-| `npm run build`      | Type-check the server and client, then create the production client build. |
-| `npm run mcp:token`  | Generate the local MCP proxy credential without printing it.               |
-| `npm run mcp`        | Start the vocabulary MCP server over STDIO.                                |
-| `npm run mcp:smoke`  | Exercise MCP discovery, read, and an audited no-op write.                  |
-| `npm start`          | Start only the API using the current `.env`.                               |
+| Command                  | Purpose                                                                    |
+| ------------------------ | -------------------------------------------------------------------------- |
+| `npm run db:migrate`     | Apply unapplied SQL migrations transactionally.                            |
+| `npm test`               | Run server tests.                                                          |
+| `npm run lint`           | Run ESLint.                                                                |
+| `npm run build`          | Type-check the server and client, then create the production client build. |
+| `npm run mcp:token`      | Generate the local MCP proxy credential without printing it.               |
+| `npm run mcp`            | Start the vocabulary MCP server over STDIO.                                |
+| `npm run mcp:http`       | Start the vocabulary MCP server over Streamable HTTP.                      |
+| `npm run mcp:http:smoke` | Verify HTTP authentication, initialization, and tool discovery.            |
+| `npm run mcp:smoke`      | Exercise MCP discovery, read, and an audited no-op write.                  |
+| `npm start`              | Start only the API using the current `.env`.                               |
 
 ## API
 
@@ -106,12 +110,12 @@ GET /api/words/123?language=ru
 
 All request values are validated before use. SQL data values use PostgreSQL parameters rather than string interpolation.
 
-## Local MCP access for ChatGPT and Codex
+## MCP access for ChatGPT and Codex
 
 The MCP process never connects to PostgreSQL. It calls a private Fastify proxy on `127.0.0.1`, and only that proxy uses `DATABASE_URL`:
 
 ```text
-ChatGPT/Codex -> local MCP (STDIO) -> authenticated localhost API -> PostgreSQL
+ChatGPT/Codex -> MCP (STDIO or Streamable HTTP) -> authenticated localhost API -> PostgreSQL
 ```
 
 Generate a credential once, if one is not already configured:
@@ -129,6 +133,16 @@ codex mcp add oxford-vocabulary -- /Users/lialis/projects/tree/node_modules/.bin
 ```
 
 This repository is already registered on the current machine. Restart ChatGPT/Codex, or start a new task, if the server does not appear immediately. Ask the model to use `oxford-vocabulary` explicitly when you want it to inspect or change vocabulary.
+
+For a remote MCP client such as a ChatGPT custom app, start the Streamable HTTP transport:
+
+```bash
+npm run mcp:http
+```
+
+Its local endpoint is `http://127.0.0.1:3103/mcp`. The endpoint accepts MCP `GET`, `POST`, and `DELETE` requests and requires `Authorization: Bearer <token>`. It uses `MCP_HTTP_TOKEN` when configured and otherwise reuses `MCP_API_TOKEN`; never put either token in a prompt, URL, or committed file. The unauthenticated `/health` endpoint exposes only service availability.
+
+ChatGPT cannot reach `127.0.0.1` on your computer. Put this server behind an authenticated HTTPS tunnel for development, or deploy the MCP proxy for persistent use, and give ChatGPT the resulting HTTPS `/mcp` URL. Keep PostgreSQL and the private API unexposed. `MCP_HTTP_HOST` defaults to `127.0.0.1`; only change it when the deployment network is already protected.
 
 Available tools are deliberately narrow: search vocabulary, read one sense, and update its definition, transcription, CEFR level, translation, collocations, parts of speech, or learning status. There is no arbitrary SQL or delete tool. Every write:
 
