@@ -1,0 +1,7 @@
+dist
+coverage
+node_modules
+package-lock.json
+src/assets/**/*.svg
+src/assets/**/*.png
+server/migrations/*.sql
