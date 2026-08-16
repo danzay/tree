@@ -1,7 +1,7 @@
 CREATE TABLE assistant_changes (
   id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   sense_id bigint NOT NULL REFERENCES senses(id) ON DELETE RESTRICT,
-  client text NOT NULL CHECK (client IN ('local_mcp')),
+  client text NOT NULL CHECK (btrim(client) <> ''),
   tool_name text NOT NULL CHECK (tool_name ~ '^[a-z_]+$'),
   before_data jsonb NOT NULL,
   after_data jsonb NOT NULL,
