@@ -1,0 +1,32 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="388" height="142" viewBox="0 0 388 142" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Cover">
+<path d="M0 12C0 5.37258 5.37258 0 12 0H376C382.627 0 388 5.37258 388 12V142H0V12Z" fill="#F9DCC5"/>
+<ellipse id="Pressed leaf" cx="297.994" cy="77.9154" rx="5" ry="11" transform="rotate(34 297.994 77.9154)" fill="#245C35"/>
+<ellipse id="Pressed leaf_2" cx="320.83" cy="86.0263" rx="5" ry="11" transform="rotate(-30 320.83 86.0263)" fill="#245C35"/>
+<line id="Stem" x1="308" y1="69.5" x2="326" y2="105.5" stroke="#245C35"/>
+<rect id="Wave" x="52" y="66" width="3" height="10" rx="1.5" fill="#F1B98E"/>
+<rect id="Wave_2" x="63" y="62" width="3" height="18" rx="1.5" fill="#F1B98E"/>
+<rect id="Wave_3" x="74" y="57" width="3" height="28" rx="1.5" fill="#F1B98E"/>
+<rect id="Wave_4" x="85" y="50" width="3" height="42" rx="1.5" fill="#F1B98E"/>
+<rect id="Wave_5" x="96" y="59" width="3" height="24" rx="1.5" fill="#F1B98E"/>
+<rect id="Wave_6" x="107" y="64" width="3" height="14" rx="1.5" fill="#F1B98E"/>
+<rect id="Wave_7" x="118" y="54" width="3" height="34" rx="1.5" fill="#F1B98E"/>
+<rect id="Wave_8" x="129" y="44" width="3" height="54" rx="1.5" fill="#F1B98E"/>
+<rect id="Wave_9" x="140" y="52" width="3" height="38" rx="1.5" fill="#F1B98E"/>
+<rect id="Wave_10" x="151" y="61" width="3" height="20" rx="1.5" fill="#F1B98E"/>
+<rect id="Wave_11" x="162" y="65" width="3" height="12" rx="1.5" fill="#F1B98E"/>
+<rect id="Wave_12" x="173" y="56" width="3" height="30" rx="1.5" fill="#F1B98E"/>
+<rect id="Wave_13" x="184" y="47" width="3" height="48" rx="1.5" fill="#F1B98E"/>
+<rect id="Wave_14" x="195" y="40" width="3" height="62" rx="1.5" fill="#F1B98E"/>
+<rect id="Wave_15" x="206" y="53" width="3" height="36" rx="1.5" fill="#F1B98E"/>
+<rect id="Wave_16" x="217" y="62" width="3" height="18" rx="1.5" fill="#F1B98E"/>
+<rect id="Wave_17" x="228" y="57" width="3" height="28" rx="1.5" fill="#F1B98E"/>
+<rect id="Wave_18" x="239" y="49" width="3" height="44" rx="1.5" fill="#F1B98E"/>
+<rect id="Wave_19" x="250" y="55" width="3" height="32" rx="1.5" fill="#F1B98E"/>
+<rect id="Wave_20" x="261" y="63" width="3" height="16" rx="1.5" fill="#F1B98E"/>
+<rect id="Wave_21" x="272" y="59" width="3" height="24" rx="1.5" fill="#F1B98E"/>
+<rect id="Wave_22" x="283" y="52" width="3" height="38" rx="1.5" fill="#F1B98E"/>
+<rect id="Wave_23" x="294" y="61" width="3" height="20" rx="1.5" fill="#F1B98E"/>
+<rect id="Wave_24" x="305" y="65" width="3" height="12" rx="1.5" fill="#F1B98E"/>
+</g>
+</svg>
