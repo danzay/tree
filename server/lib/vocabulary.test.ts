@@ -9,10 +9,22 @@ import {
 
 describe('source vocabulary transformations', () => {
   it('maps each verified legacy status', () => {
-    assert.equal(inferImportedStatus({ qRec: 0, qRep: 0, sRec: 0, sRep: 0, eRec: 2.5, eRep: 2.5 }), 'new')
-    assert.equal(inferImportedStatus({ qRec: 2, qRep: 2, sRec: 1, sRep: 0, eRec: 2.5, eRep: 2.5 }), 'learning')
-    assert.equal(inferImportedStatus({ qRec: 4, qRep: 4, sRec: 0, sRep: 0, eRec: 2.75, eRep: 2.5 }), 'learned')
-    assert.equal(inferImportedStatus({ qRec: 4, qRep: 4, sRec: 0, sRep: 0, eRec: 2.5, eRep: 2.5 }), 'known')
+    assert.equal(
+      inferImportedStatus({ qRec: 0, qRep: 0, sRec: 0, sRep: 0, eRec: 2.5, eRep: 2.5 }),
+      'new',
+    )
+    assert.equal(
+      inferImportedStatus({ qRec: 2, qRep: 2, sRec: 1, sRep: 0, eRec: 2.5, eRep: 2.5 }),
+      'learning',
+    )
+    assert.equal(
+      inferImportedStatus({ qRec: 4, qRep: 4, sRec: 0, sRep: 0, eRec: 2.75, eRep: 2.5 }),
+      'learned',
+    )
+    assert.equal(
+      inferImportedStatus({ qRec: 4, qRep: 4, sRec: 0, sRep: 0, eRec: 2.5, eRep: 2.5 }),
+      'known',
+    )
   })
 
   it('normalizes search spelling without changing display spelling', () => {

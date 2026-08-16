@@ -16,7 +16,9 @@ import {
 const SOURCE_SYSTEM = 'reword_sqlite'
 const IMPORTER_VERSION = '1.0.0'
 const EXPECTED_CATEGORY_LINKS = 5_639
-const selectedCategories = [
+const SQL_PLACEHOLDER = '?'
+const SQL_PLACEHOLDER_SEPARATOR = ', '
+const SELECTED_CATEGORIES = [
   'oxford3000_a1',
   'oxford3000_a2',
   'oxford3000_b1',
@@ -25,7 +27,7 @@ const selectedCategories = [
   'oxford5000_c1',
 ] as const
 
-const sourceRowSchema = z.object({
+const SOURCE_ROW_SCHEMA = z.object({
   ID: z.number().int(),
   WORD: z.string().trim().min(1),
   RUS: z.string().nullable(),
@@ -44,36 +46,39 @@ const sourceRowSchema = z.object({
   E_REP: z.number(),
   F_REC: z.number().int(),
   F_REP: z.number().int(),
-  CATEGORY_ID: z.enum(selectedCategories),
+  CATEGORY_ID: z.enum(SELECTED_CATEGORIES),
 })
 
-type SourceRow = z.infer<typeof sourceRowSchema>
+type SourceRow = z.infer<typeof SOURCE_ROW_SCHEMA>
 
 function categoryLevel(category: SourceRow['CATEGORY_ID']): string {
   return category.slice(category.lastIndexOf('_') + 1).toUpperCase()
 }
 
-async function queryId(
-  client: PoolClient,
-  text: string,
-  values: unknown[],
-): Promise<number> {
+async function queryId(client: PoolClient, text: string, values: unknown[]): Promise<number> {
   const result = await client.query<{ id: string }>(text, values)
   const id = result.rows[0]?.id
-  if (!id) throw new Error('Expected an inserted or updated row ID')
+  if (!id) {
+    throw new Error('Expected an inserted or updated row ID')
+  }
+
   return Number(id)
 }
 
 const sourcePath = process.env.SOURCE_SQLITE
-if (!sourcePath) throw new Error('SOURCE_SQLITE is required')
+if (!sourcePath) {
+  throw new Error('SOURCE_SQLITE is required')
+}
 
 const sourceBytes = await readFile(sourcePath)
 const sourceHash = createHash('sha256').update(sourceBytes).digest('hex')
 const database = new DatabaseSync(sourcePath, { readOnly: true })
 const pool = createDatabasePool()
 
-const placeholders = selectedCategories.map(() => '?').join(', ')
-const rawRows = database.prepare(`
+const placeholders = SELECTED_CATEGORIES.map(() => SQL_PLACEHOLDER).join(SQL_PLACEHOLDER_SEPARATOR)
+const rawRows = database
+  .prepare(
+    `
   SELECT w.ID, w.WORD, w.RUS, w.TRANSCRIPTION, w.POS, w.EXAMPLES_RUS,
          w.Q_REC, w.Q_REP, w.T_REC, w.T_REP, w.I_REC, w.I_REP,
          w.S_REC, w.S_REP, w.E_REC, w.E_REP, w.F_REC, w.F_REP,
@@ -82,9 +87,11 @@ const rawRows = database.prepare(`
   JOIN WORD_CATEGORY wc ON wc.WORD_ID = w.ID
   WHERE wc.CATEGORY_ID IN (${placeholders})
   ORDER BY w.ID, wc.CATEGORY_ID
-`).all(...selectedCategories)
+`,
+  )
+  .all(...SELECTED_CATEGORIES)
 
-const rows = rawRows.map((row) => sourceRowSchema.parse(row))
+const rows = rawRows.map((row) => SOURCE_ROW_SCHEMA.parse(row))
 if (rows.length !== EXPECTED_CATEGORY_LINKS) {
   throw new Error(`Expected ${EXPECTED_CATEGORY_LINKS} Oxford category links; found ${rows.length}`)
 }
@@ -95,7 +102,10 @@ for (const row of rows) {
   group.push(row)
   rowsBySourceId.set(row.ID, group)
 }
-const ambiguousSourceRecords = [...rowsBySourceId.values()].filter((group) => group.length > 1).length
+
+const ambiguousSourceRecords = [...rowsBySourceId.values()].filter(
+  (group) => group.length > 1,
+).length
 
 const runResult = await pool.query<{ id: string }>(
   `INSERT INTO import_runs
@@ -114,7 +124,9 @@ try {
 
   for (const [sourceId, sourceRows] of rowsBySourceId) {
     const first = sourceRows[0]
-    if (!first) continue
+    if (!first) {
+      continue
+    }
 
     let inferredStatus: ImportedStatus
     try {
@@ -132,7 +144,11 @@ try {
         `INSERT INTO import_issues
           (import_run_id, source_id, severity, issue_code, details)
          VALUES ($1, $2, 'error', 'unclassified_status', $3)`,
-        [importRunId, sourceId, JSON.stringify({ message: error instanceof Error ? error.message : 'Unknown error' })],
+        [
+          importRunId,
+          sourceId,
+          JSON.stringify({ message: error instanceof Error ? error.message : 'Unknown error' }),
+        ],
       )
       continue
     }
@@ -167,7 +183,16 @@ try {
          raw_scheduling = EXCLUDED.raw_scheduling,
          updated_at = now()
        RETURNING id`,
-      [importRunId, SOURCE_SYSTEM, sourceId, first.WORD, first.RUS, first.POS, inferredStatus, JSON.stringify(rawScheduling)],
+      [
+        importRunId,
+        SOURCE_SYSTEM,
+        sourceId,
+        first.WORD,
+        first.RUS,
+        first.POS,
+        inferredStatus,
+        JSON.stringify(rawScheduling),
+      ],
     )
 
     const headwordId = await queryId(
@@ -189,7 +214,11 @@ try {
         `INSERT INTO import_issues
           (import_run_id, source_id, severity, issue_code, details)
          VALUES ($1, $2, 'warning', 'invalid_examples_json', $3)`,
-        [importRunId, sourceId, JSON.stringify({ message: error instanceof Error ? error.message : 'Unknown error' })],
+        [
+          importRunId,
+          sourceId,
+          JSON.stringify({ message: error instanceof Error ? error.message : 'Unknown error' }),
+        ],
       )
     }
 
@@ -200,7 +229,11 @@ try {
         `INSERT INTO import_issues
           (import_run_id, source_id, severity, issue_code, details)
          VALUES ($1, $2, 'warning', 'unknown_pos_bits', $3)`,
-        [importRunId, sourceId, JSON.stringify({ sourceCode: first.POS, unknownBits: decodedPos.unknownBits })],
+        [
+          importRunId,
+          sourceId,
+          JSON.stringify({ sourceCode: first.POS, unknownBits: decodedPos.unknownBits }),
+        ],
       )
     }
 
@@ -219,7 +252,14 @@ try {
            review_status = EXCLUDED.review_status,
            updated_at = now()
          RETURNING id`,
-        [headwordId, sourceRecordId, first.TRANSCRIPTION, level, senseIndex + 1, isAmbiguous ? 'needs_review' : 'imported'],
+        [
+          headwordId,
+          sourceRecordId,
+          first.TRANSCRIPTION,
+          level,
+          senseIndex + 1,
+          isAmbiguous ? 'needs_review' : 'imported',
+        ],
       )
 
       await client.query(
@@ -325,7 +365,7 @@ try {
 
   console.log(
     `Import completed: ${rowsBySourceId.size} source records, ${rows.length} senses, ` +
-    `${rejectedCount} rejected records, ${warningCount} warnings`,
+      `${rejectedCount} rejected records, ${warningCount} warnings`,
   )
 } catch (error) {
   await client.query('ROLLBACK')

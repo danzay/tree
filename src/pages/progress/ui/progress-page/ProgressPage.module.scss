@@ -1,0 +1,24 @@
+@use '@/shared/styles/mixins';
+
+.page {
+  width: min(880px, calc(100% - 40px));
+  margin: 0 auto;
+  padding: 100px 0;
+
+  h1 {
+    margin: 8px 0;
+    font-size: 44px;
+    @include mixins.serif-heading;
+  }
+
+  p {
+    color: var(--muted);
+  }
+}
+
+.eyebrow {
+  color: var(--moss) !important;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}

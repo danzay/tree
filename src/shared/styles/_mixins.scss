@@ -1,0 +1,21 @@
+@mixin focus-ring($offset: 2px) {
+  outline: 2px solid var(--focus);
+  outline-offset: $offset;
+}
+
+@mixin serif-heading {
+  color: var(--moss-dark);
+  font-family: Georgia, 'Times New Roman', serif;
+  font-weight: 400;
+}
+
+@mixin visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

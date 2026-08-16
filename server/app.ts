@@ -1,21 +1,32 @@
 import Fastify, { type FastifyInstance } from 'fastify'
 import type pg from 'pg'
 import { z } from 'zod'
-import { cefrLevelSchema, normalizeHeadword, progressStatusSchema } from './lib/vocabulary.ts'
+import { CEFR_LEVEL_SCHEMA, normalizeHeadword, PROGRESS_STATUS_SCHEMA } from './lib/vocabulary.ts'
 import { registerMcpApi } from './routes/mcp-api.ts'
 
-const listQuerySchema = z.object({
+const LIST_QUERY_SCHEMA = z.object({
   q: z.string().trim().max(100).optional(),
-  level: cefrLevelSchema.optional(),
-  status: progressStatusSchema.optional(),
-  partOfSpeech: z.string().trim().regex(/^[a-z_]+$/).optional(),
-  language: z.string().trim().regex(/^[a-z]{2,3}(-[A-Za-z0-9]+)*$/).default('ru'),
-  includeNeedsReview: z.enum(['true', 'false']).optional().transform((value) => value === 'true'),
+  level: CEFR_LEVEL_SCHEMA.optional(),
+  status: PROGRESS_STATUS_SCHEMA.optional(),
+  partOfSpeech: z
+    .string()
+    .trim()
+    .regex(/^[a-z_]+$/)
+    .optional(),
+  language: z
+    .string()
+    .trim()
+    .regex(/^[a-z]{2,3}(-[A-Za-z0-9]+)*$/)
+    .default('ru'),
+  includeNeedsReview: z
+    .enum(['true', 'false'])
+    .optional()
+    .transform((value) => value === 'true'),
   limit: z.coerce.number().int().min(1).max(100).default(30),
   offset: z.coerce.number().int().min(0).max(100_000).default(0),
 })
 
-const idParamsSchema = z.object({ id: z.coerce.number().int().positive() })
+const ID_PARAMS_SCHEMA = z.object({ id: z.coerce.number().int().positive() })
 
 interface WordRow {
   id: string
@@ -31,7 +42,7 @@ interface WordRow {
   total: string
 }
 
-const selectWordFields = `
+const SELECT_WORD_FIELDS = `
   SELECT s.id::text,
          h.word,
          s.definition_en AS definition,
@@ -85,7 +96,10 @@ export function buildApp(pool: pg.Pool): FastifyInstance {
   const app = Fastify({ logger: true })
 
   app.setErrorHandler((error, request, reply) => {
-    request.log.error({ errorName: error instanceof Error ? error.name : 'UnknownError' }, 'Request failed')
+    request.log.error(
+      { errorName: error instanceof Error ? error.name : 'UnknownError' },
+      'Request failed',
+    )
     return reply.status(500).send({ error: 'Internal server error' })
   })
 
@@ -121,14 +135,18 @@ export function buildApp(pool: pg.Pool): FastifyInstance {
       headwords: Number(summary.rows[0]?.headwords ?? 0),
       byLevel: Object.fromEntries(levels.rows.map((row) => [row.level, Number(row.count)])),
       byStatus: Object.fromEntries(statuses.rows.map((row) => [row.status, Number(row.count)])),
-      reconciliation: Object.fromEntries(reconciliation.rows.map((row) => [row.type, Number(row.count)])),
+      reconciliation: Object.fromEntries(
+        reconciliation.rows.map((row) => [row.type, Number(row.count)]),
+      ),
     })
   })
 
   app.get('/api/words', async (request, reply) => {
-    const parsed = listQuerySchema.safeParse(request.query)
+    const parsed = LIST_QUERY_SCHEMA.safeParse(request.query)
     if (!parsed.success) {
-      return reply.status(400).send({ error: 'Invalid query parameters', details: parsed.error.flatten() })
+      return reply
+        .status(400)
+        .send({ error: 'Invalid query parameters', details: parsed.error.flatten() })
     }
 
     const query = parsed.data
@@ -139,9 +157,18 @@ export function buildApp(pool: pg.Pool): FastifyInstance {
       return `$${values.length}`
     }
 
-    if (query.q) filters.push(`strpos(h.normalized_word, ${parameter(normalizeHeadword(query.q))}) = 1`)
-    if (query.level) filters.push(`s.cefr_level = ${parameter(query.level)}`)
-    if (query.status) filters.push(`sp.status = ${parameter(query.status)}`)
+    if (query.q) {
+      filters.push(`strpos(h.normalized_word, ${parameter(normalizeHeadword(query.q))}) = 1`)
+    }
+
+    if (query.level) {
+      filters.push(`s.cefr_level = ${parameter(query.level)}`)
+    }
+
+    if (query.status) {
+      filters.push(`sp.status = ${parameter(query.status)}`)
+    }
+
     if (query.partOfSpeech) {
       filters.push(`EXISTS (
         SELECT 1 FROM sense_parts_of_speech filter_pos
@@ -154,7 +181,7 @@ export function buildApp(pool: pg.Pool): FastifyInstance {
     const limitParameter = parameter(query.limit)
     const offsetParameter = parameter(query.offset)
     const result = await pool.query<WordRow>(
-      `${selectWordFields}
+      `${SELECT_WORD_FIELDS}
        ${where}
        ORDER BY h.normalized_word, s.sense_order, s.id
        LIMIT ${limitParameter} OFFSET ${offsetParameter}`,
@@ -170,20 +197,23 @@ export function buildApp(pool: pg.Pool): FastifyInstance {
   })
 
   app.get('/api/words/:id', async (request, reply) => {
-    const params = idParamsSchema.safeParse(request.params)
-    const language = z.string().regex(/^[a-z]{2,3}(-[A-Za-z0-9]+)*$/).safeParse(
-      (request.query as { language?: unknown }).language ?? 'ru',
-    )
+    const params = ID_PARAMS_SCHEMA.safeParse(request.params)
+    const language = z
+      .string()
+      .regex(/^[a-z]{2,3}(-[A-Za-z0-9]+)*$/)
+      .safeParse((request.query as { language?: unknown }).language ?? 'ru')
     if (!params.success || !language.success) {
       return reply.status(400).send({ error: 'Invalid word ID or language' })
     }
 
-    const result = await pool.query<WordRow>(
-      `${selectWordFields} WHERE s.id = $2`,
-      [language.data, params.data.id],
-    )
+    const result = await pool.query<WordRow>(`${SELECT_WORD_FIELDS} WHERE s.id = $2`, [
+      language.data,
+      params.data.id,
+    ])
     const row = result.rows[0]
-    if (!row) return reply.status(404).send({ error: 'Word sense not found' })
+    if (!row) {
+      return reply.status(404).send({ error: 'Word sense not found' })
+    }
 
     return reply.send(publicWord(row))
   })

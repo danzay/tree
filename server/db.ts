@@ -4,7 +4,9 @@ const { Pool } = pg
 
 export function getDatabaseUrl(): string {
   const value = process.env.DATABASE_URL
-  if (!value) throw new Error('DATABASE_URL is required')
+  if (!value) {
+    throw new Error('DATABASE_URL is required')
+  }
 
   const parsed = new URL(value)
   if (parsed.protocol !== 'postgres:' && parsed.protocol !== 'postgresql:') {

@@ -1,0 +1,160 @@
+@use 'sass:color';
+@use '@/shared/styles/mixins';
+
+.card {
+  position: relative;
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--paper);
+  box-shadow: 0 4px 11px rgba(30, 43, 32, 0.08);
+  transition:
+    transform 170ms ease,
+    box-shadow 170ms ease,
+    border-color 170ms ease;
+
+  &:hover {
+    border-color: color.adjust(#d9d2c7, $lightness: -8%);
+    box-shadow: 0 9px 22px rgba(30, 43, 32, 0.12);
+    transform: translateY(-2px);
+  }
+}
+
+.main {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  text-align: left;
+}
+
+.cover {
+  display: block;
+  width: 100%;
+  height: 142px;
+  object-fit: cover;
+}
+
+.body {
+  display: flex;
+  min-height: 136px;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 10px 16px 16px;
+}
+
+.title {
+  margin-top: 10px;
+  font-size: 20px;
+  line-height: 1.25;
+  @include mixins.serif-heading;
+}
+
+.metadata {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: auto;
+  color: var(--muted);
+  font-size: 12px;
+
+  span:last-child {
+    color: var(--ink);
+  }
+}
+
+.menu {
+  position: absolute;
+  right: 8px;
+  bottom: 7px;
+  width: 28px;
+  height: 32px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+  font-size: 19px;
+
+  &:hover {
+    background: var(--sage-soft);
+  }
+
+  &:focus-visible {
+    @include mixins.focus-ring(0);
+  }
+}
+
+.badge {
+  display: inline-flex;
+  min-height: 32px;
+  align-items: center;
+  padding: 0 10px;
+  border-radius: 7px;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 550;
+}
+
+.article {
+  background: var(--sage-soft);
+}
+
+.story {
+  background: var(--yellow);
+}
+
+.video {
+  background: var(--blue);
+}
+
+.note {
+  background: var(--lavender);
+}
+
+.podcast {
+  background: var(--peach);
+}
+
+.list {
+  min-height: 150px;
+
+  .main {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    min-height: 150px;
+  }
+
+  .cover {
+    height: 100%;
+    min-height: 150px;
+    border-radius: 12px 0 0 12px;
+  }
+
+  .body {
+    min-height: 150px;
+    padding: 18px 54px 16px 22px;
+  }
+
+  .metadata {
+    margin-top: auto;
+  }
+}
+
+@media (max-width: 720px) {
+  .list {
+    .main {
+      grid-template-columns: 1fr;
+    }
+
+    .cover {
+      height: 142px;
+      border-radius: 12px 12px 0 0;
+    }
+  }
+}

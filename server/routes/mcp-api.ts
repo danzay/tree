@@ -3,45 +3,58 @@ import type { FastifyInstance, FastifyReply } from 'fastify'
 import type pg from 'pg'
 import { z } from 'zod'
 import {
-  cefrLevelSchema,
-  partOfSpeechSchema,
-  progressStatusSchema,
+  CEFR_LEVEL_SCHEMA,
+  PART_OF_SPEECH_SCHEMA,
+  PROGRESS_STATUS_SCHEMA,
 } from '../lib/vocabulary.ts'
 
-const senseParamsSchema = z.object({ id: z.coerce.number().int().positive() })
-const expectedUpdateSchema = z.object({
+const SENSE_PARAMS_SCHEMA = z.object({ id: z.coerce.number().int().positive() })
+const EXPECTED_UPDATE_SCHEMA = z.object({
   expectedUpdatedAt: z.iso.datetime(),
 })
-const definitionSchema = expectedUpdateSchema.extend({
+const DEFINITION_SCHEMA = EXPECTED_UPDATE_SCHEMA.extend({
   definition: z.string().trim().min(1).max(4_000).nullable(),
 })
-const transcriptionSchema = expectedUpdateSchema.extend({
+const TRANSCRIPTION_SCHEMA = EXPECTED_UPDATE_SCHEMA.extend({
   transcription: z.string().trim().min(1).max(300).nullable(),
 })
-const levelSchema = expectedUpdateSchema.extend({ level: cefrLevelSchema })
-const translationParamsSchema = senseParamsSchema.extend({
-  language: z.string().trim().regex(/^[a-z]{2,3}(-[A-Za-z0-9]+)*$/),
+const LEVEL_SCHEMA = EXPECTED_UPDATE_SCHEMA.extend({ level: CEFR_LEVEL_SCHEMA })
+const TRANSLATION_PARAMS_SCHEMA = SENSE_PARAMS_SCHEMA.extend({
+  language: z
+    .string()
+    .trim()
+    .regex(/^[a-z]{2,3}(-[A-Za-z0-9]+)*$/),
 })
-const translationSchema = expectedUpdateSchema.extend({
+const TRANSLATION_SCHEMA = EXPECTED_UPDATE_SCHEMA.extend({
   translation: z.string().trim().min(1).max(4_000),
   languageName: z.string().trim().min(1).max(100).optional(),
 })
-const collocationSchema = expectedUpdateSchema.extend({
+const COLLOCATION_SCHEMA = EXPECTED_UPDATE_SCHEMA.extend({
   collocation: z.string().trim().min(1).max(500),
 })
-const partsOfSpeechSchema = expectedUpdateSchema.extend({
-  partsOfSpeech: z.array(partOfSpeechSchema).min(1).max(12).transform((values) => [...new Set(values)]),
+const PARTS_OF_SPEECH_SCHEMA = EXPECTED_UPDATE_SCHEMA.extend({
+  partsOfSpeech: z
+    .array(PART_OF_SPEECH_SCHEMA)
+    .min(1)
+    .max(12)
+    .transform((values) => [...new Set(values)]),
 })
-const statusSchema = expectedUpdateSchema.extend({ status: progressStatusSchema })
+const STATUS_SCHEMA = EXPECTED_UPDATE_SCHEMA.extend({ status: PROGRESS_STATUS_SCHEMA })
 
 class MutationError extends Error {
-  constructor(public readonly statusCode: number, message: string) {
+  constructor(
+    public readonly statusCode: number,
+    message: string,
+  ) {
     super(message)
   }
 }
 
 function authorized(header: string | undefined, configuredToken: string | undefined): boolean {
-  if (!configuredToken || !header?.startsWith('Bearer ')) return false
+  if (!configuredToken || !header?.startsWith('Bearer ')) {
+    return false
+  }
+
   const supplied = Buffer.from(header.slice('Bearer '.length))
   const expected = Buffer.from(configuredToken)
   return supplied.length === expected.length && timingSafeEqual(supplied, expected)
@@ -62,7 +75,10 @@ async function mutateSense(
       [senseId],
     )
     const current = sense.rows[0]
-    if (!current) throw new MutationError(404, 'Word sense not found')
+    if (!current) {
+      throw new MutationError(404, 'Word sense not found')
+    }
+
     if (current.updated_at.toISOString() !== new Date(expectedUpdatedAt).toISOString()) {
       throw new MutationError(409, 'Word sense changed; fetch it again before updating')
     }
@@ -73,7 +89,9 @@ async function mutateSense(
       [senseId],
     )
     const updatedAt = updated.rows[0]?.updated_at.toISOString()
-    if (!updatedAt) throw new Error('Failed to update word sense timestamp')
+    if (!updatedAt) {
+      throw new Error('Failed to update word sense timestamp')
+    }
 
     await client.query(
       `INSERT INTO assistant_changes
@@ -105,9 +123,13 @@ async function sendMutation(
     if (error instanceof MutationError) {
       return reply.status(error.statusCode).send({ error: error.message })
     }
+
     if (typeof error === 'object' && error !== null && 'code' in error && error.code === '23505') {
-      return reply.status(409).send({ error: 'The requested value conflicts with existing vocabulary data' })
+      return reply
+        .status(409)
+        .send({ error: 'The requested value conflicts with existing vocabulary data' })
     }
+
     throw error
   }
 }
@@ -121,6 +143,7 @@ export async function registerMcpApi(
     if (!configuredToken) {
       return reply.status(503).send({ error: 'Local MCP API is not configured' })
     }
+
     if (!authorized(request.headers.authorization, configuredToken)) {
       return reply.status(401).send({ error: 'Unauthorized' })
     }
@@ -132,8 +155,10 @@ export async function registerMcpApi(
   })
 
   app.get('/api/mcp/word-senses/:id', async (request, reply) => {
-    const params = senseParamsSchema.safeParse(request.params)
-    if (!params.success) return invalid(reply, params.error.flatten())
+    const params = SENSE_PARAMS_SCHEMA.safeParse(request.params)
+    if (!params.success) {
+      return invalid(reply, params.error.flatten())
+    }
 
     const result = await pool.query<{
       id: string
@@ -203,129 +228,250 @@ export async function registerMcpApi(
       [params.data.id],
     )
     const row = result.rows[0]
-    if (!row) return reply.status(404).send({ error: 'Word sense not found' })
+    if (!row) {
+      return reply.status(404).send({ error: 'Word sense not found' })
+    }
+
     return reply.send({ ...row, updatedAt: row.updatedAt.toISOString() })
   })
 
   app.patch('/api/mcp/word-senses/:id/definition', async (request, reply) => {
-    const params = senseParamsSchema.safeParse(request.params)
-    const body = definitionSchema.safeParse(request.body)
-    if (!params.success || !body.success) return invalid(reply, { params: params.error?.flatten(), body: body.error?.flatten() })
-    return sendMutation(reply, () => mutateSense(pool, params.data.id, body.data.expectedUpdatedAt, 'set_definition', async (client) => {
-      const before = await client.query<{ definition: string | null }>('SELECT definition_en AS definition FROM senses WHERE id = $1', [params.data.id])
-      await client.query('UPDATE senses SET definition_en = $2 WHERE id = $1', [params.data.id, body.data.definition])
-      return { before: before.rows[0], after: { definition: body.data.definition } }
-    }))
+    const params = SENSE_PARAMS_SCHEMA.safeParse(request.params)
+    const body = DEFINITION_SCHEMA.safeParse(request.body)
+    if (!params.success || !body.success) {
+      return invalid(reply, { params: params.error?.flatten(), body: body.error?.flatten() })
+    }
+
+    return sendMutation(reply, () =>
+      mutateSense(
+        pool,
+        params.data.id,
+        body.data.expectedUpdatedAt,
+        'set_definition',
+        async (client) => {
+          const before = await client.query<{ definition: string | null }>(
+            'SELECT definition_en AS definition FROM senses WHERE id = $1',
+            [params.data.id],
+          )
+          await client.query('UPDATE senses SET definition_en = $2 WHERE id = $1', [
+            params.data.id,
+            body.data.definition,
+          ])
+          return { before: before.rows[0], after: { definition: body.data.definition } }
+        },
+      ),
+    )
   })
 
   app.patch('/api/mcp/word-senses/:id/transcription', async (request, reply) => {
-    const params = senseParamsSchema.safeParse(request.params)
-    const body = transcriptionSchema.safeParse(request.body)
-    if (!params.success || !body.success) return invalid(reply, { params: params.error?.flatten(), body: body.error?.flatten() })
-    return sendMutation(reply, () => mutateSense(pool, params.data.id, body.data.expectedUpdatedAt, 'set_transcription', async (client) => {
-      const before = await client.query<{ transcription: string | null }>('SELECT transcription FROM senses WHERE id = $1', [params.data.id])
-      await client.query('UPDATE senses SET transcription = $2 WHERE id = $1', [params.data.id, body.data.transcription])
-      return { before: before.rows[0], after: { transcription: body.data.transcription } }
-    }))
+    const params = SENSE_PARAMS_SCHEMA.safeParse(request.params)
+    const body = TRANSCRIPTION_SCHEMA.safeParse(request.body)
+    if (!params.success || !body.success) {
+      return invalid(reply, { params: params.error?.flatten(), body: body.error?.flatten() })
+    }
+
+    return sendMutation(reply, () =>
+      mutateSense(
+        pool,
+        params.data.id,
+        body.data.expectedUpdatedAt,
+        'set_transcription',
+        async (client) => {
+          const before = await client.query<{ transcription: string | null }>(
+            'SELECT transcription FROM senses WHERE id = $1',
+            [params.data.id],
+          )
+          await client.query('UPDATE senses SET transcription = $2 WHERE id = $1', [
+            params.data.id,
+            body.data.transcription,
+          ])
+          return { before: before.rows[0], after: { transcription: body.data.transcription } }
+        },
+      ),
+    )
   })
 
   app.patch('/api/mcp/word-senses/:id/level', async (request, reply) => {
-    const params = senseParamsSchema.safeParse(request.params)
-    const body = levelSchema.safeParse(request.body)
-    if (!params.success || !body.success) return invalid(reply, { params: params.error?.flatten(), body: body.error?.flatten() })
-    return sendMutation(reply, () => mutateSense(pool, params.data.id, body.data.expectedUpdatedAt, 'set_cefr_level', async (client) => {
-      const before = await client.query<{ level: string }>('SELECT cefr_level AS level FROM senses WHERE id = $1', [params.data.id])
-      await client.query('UPDATE senses SET cefr_level = $2 WHERE id = $1', [params.data.id, body.data.level])
-      return { before: before.rows[0], after: { level: body.data.level } }
-    }))
+    const params = SENSE_PARAMS_SCHEMA.safeParse(request.params)
+    const body = LEVEL_SCHEMA.safeParse(request.body)
+    if (!params.success || !body.success) {
+      return invalid(reply, { params: params.error?.flatten(), body: body.error?.flatten() })
+    }
+
+    return sendMutation(reply, () =>
+      mutateSense(
+        pool,
+        params.data.id,
+        body.data.expectedUpdatedAt,
+        'set_cefr_level',
+        async (client) => {
+          const before = await client.query<{ level: string }>(
+            'SELECT cefr_level AS level FROM senses WHERE id = $1',
+            [params.data.id],
+          )
+          await client.query('UPDATE senses SET cefr_level = $2 WHERE id = $1', [
+            params.data.id,
+            body.data.level,
+          ])
+          return { before: before.rows[0], after: { level: body.data.level } }
+        },
+      ),
+    )
   })
 
   app.put('/api/mcp/word-senses/:id/translations/:language', async (request, reply) => {
-    const params = translationParamsSchema.safeParse(request.params)
-    const body = translationSchema.safeParse(request.body)
-    if (!params.success || !body.success) return invalid(reply, { params: params.error?.flatten(), body: body.error?.flatten() })
-    return sendMutation(reply, () => mutateSense(pool, params.data.id, body.data.expectedUpdatedAt, 'set_translation', async (client) => {
-      if (body.data.languageName) {
-        await client.query(
-          `INSERT INTO languages (code, name) VALUES ($1, $2)
+    const params = TRANSLATION_PARAMS_SCHEMA.safeParse(request.params)
+    const body = TRANSLATION_SCHEMA.safeParse(request.body)
+    if (!params.success || !body.success) {
+      return invalid(reply, { params: params.error?.flatten(), body: body.error?.flatten() })
+    }
+
+    return sendMutation(reply, () =>
+      mutateSense(
+        pool,
+        params.data.id,
+        body.data.expectedUpdatedAt,
+        'set_translation',
+        async (client) => {
+          if (body.data.languageName) {
+            await client.query(
+              `INSERT INTO languages (code, name) VALUES ($1, $2)
            ON CONFLICT (code) DO NOTHING`,
-          [params.data.language, body.data.languageName],
-        )
-      }
-      const language = await client.query('SELECT 1 FROM languages WHERE code = $1 AND is_active', [params.data.language])
-      if (!language.rowCount) throw new MutationError(400, 'Language is not configured; provide languageName to create it')
-      const before = await client.query<{ translation: string }>(
-        'SELECT translation FROM sense_translations WHERE sense_id = $1 AND language_code = $2 AND position = 1',
-        [params.data.id, params.data.language],
-      )
-      await client.query(
-        `INSERT INTO sense_translations (sense_id, language_code, translation, position)
+              [params.data.language, body.data.languageName],
+            )
+          }
+
+          const language = await client.query(
+            'SELECT 1 FROM languages WHERE code = $1 AND is_active',
+            [params.data.language],
+          )
+          if (!language.rowCount) {
+            throw new MutationError(
+              400,
+              'Language is not configured; provide languageName to create it',
+            )
+          }
+
+          const before = await client.query<{ translation: string }>(
+            'SELECT translation FROM sense_translations WHERE sense_id = $1 AND language_code = $2 AND position = 1',
+            [params.data.id, params.data.language],
+          )
+          await client.query(
+            `INSERT INTO sense_translations (sense_id, language_code, translation, position)
          VALUES ($1, $2, $3, 1)
          ON CONFLICT (sense_id, language_code, position)
          DO UPDATE SET translation = EXCLUDED.translation`,
-        [params.data.id, params.data.language, body.data.translation],
-      )
-      return {
-        before: { language: params.data.language, translation: before.rows[0]?.translation ?? null },
-        after: { language: params.data.language, translation: body.data.translation },
-      }
-    }))
+            [params.data.id, params.data.language, body.data.translation],
+          )
+          return {
+            before: {
+              language: params.data.language,
+              translation: before.rows[0]?.translation ?? null,
+            },
+            after: { language: params.data.language, translation: body.data.translation },
+          }
+        },
+      ),
+    )
   })
 
   app.post('/api/mcp/word-senses/:id/collocations', async (request, reply) => {
-    const params = senseParamsSchema.safeParse(request.params)
-    const body = collocationSchema.safeParse(request.body)
-    if (!params.success || !body.success) return invalid(reply, { params: params.error?.flatten(), body: body.error?.flatten() })
-    return sendMutation(reply, () => mutateSense(pool, params.data.id, body.data.expectedUpdatedAt, 'add_collocation', async (client) => {
-      const existing = await client.query<{ id: string; text: string }>(
-        'SELECT id::text, text FROM sense_collocations WHERE sense_id = $1 AND lower(text) = lower($2)',
-        [params.data.id, body.data.collocation],
-      )
-      if (existing.rows[0]) {
-        return { before: existing.rows[0], after: existing.rows[0] }
-      }
-      const inserted = await client.query<{ id: string; text: string }>(
-        `INSERT INTO sense_collocations (sense_id, text, position, source)
+    const params = SENSE_PARAMS_SCHEMA.safeParse(request.params)
+    const body = COLLOCATION_SCHEMA.safeParse(request.body)
+    if (!params.success || !body.success) {
+      return invalid(reply, { params: params.error?.flatten(), body: body.error?.flatten() })
+    }
+
+    return sendMutation(reply, () =>
+      mutateSense(
+        pool,
+        params.data.id,
+        body.data.expectedUpdatedAt,
+        'add_collocation',
+        async (client) => {
+          const existing = await client.query<{ id: string; text: string }>(
+            'SELECT id::text, text FROM sense_collocations WHERE sense_id = $1 AND lower(text) = lower($2)',
+            [params.data.id, body.data.collocation],
+          )
+          if (existing.rows[0]) {
+            return { before: existing.rows[0], after: existing.rows[0] }
+          }
+
+          const inserted = await client.query<{ id: string; text: string }>(
+            `INSERT INTO sense_collocations (sense_id, text, position, source)
          VALUES ($1, $2, (SELECT COALESCE(max(position), 0) + 1 FROM sense_collocations WHERE sense_id = $1), 'local_mcp')
          RETURNING id::text, text`,
-        [params.data.id, body.data.collocation],
-      )
-      return { before: null, after: inserted.rows[0] }
-    }))
+            [params.data.id, body.data.collocation],
+          )
+          return { before: null, after: inserted.rows[0] }
+        },
+      ),
+    )
   })
 
   app.put('/api/mcp/word-senses/:id/parts-of-speech', async (request, reply) => {
-    const params = senseParamsSchema.safeParse(request.params)
-    const body = partsOfSpeechSchema.safeParse(request.body)
-    if (!params.success || !body.success) return invalid(reply, { params: params.error?.flatten(), body: body.error?.flatten() })
-    return sendMutation(reply, () => mutateSense(pool, params.data.id, body.data.expectedUpdatedAt, 'set_parts_of_speech', async (client) => {
-      const before = await client.query<{ code: string }>(
-        'SELECT part_of_speech_code AS code FROM sense_parts_of_speech WHERE sense_id = $1 ORDER BY code',
-        [params.data.id],
-      )
-      await client.query('DELETE FROM sense_parts_of_speech WHERE sense_id = $1', [params.data.id])
-      for (const code of body.data.partsOfSpeech) {
-        await client.query('INSERT INTO sense_parts_of_speech (sense_id, part_of_speech_code) VALUES ($1, $2)', [params.data.id, code])
-      }
-      return { before: { partsOfSpeech: before.rows.map((row) => row.code) }, after: { partsOfSpeech: body.data.partsOfSpeech } }
-    }))
+    const params = SENSE_PARAMS_SCHEMA.safeParse(request.params)
+    const body = PARTS_OF_SPEECH_SCHEMA.safeParse(request.body)
+    if (!params.success || !body.success) {
+      return invalid(reply, { params: params.error?.flatten(), body: body.error?.flatten() })
+    }
+
+    return sendMutation(reply, () =>
+      mutateSense(
+        pool,
+        params.data.id,
+        body.data.expectedUpdatedAt,
+        'set_parts_of_speech',
+        async (client) => {
+          const before = await client.query<{ code: string }>(
+            'SELECT part_of_speech_code AS code FROM sense_parts_of_speech WHERE sense_id = $1 ORDER BY code',
+            [params.data.id],
+          )
+          await client.query('DELETE FROM sense_parts_of_speech WHERE sense_id = $1', [
+            params.data.id,
+          ])
+          for (const code of body.data.partsOfSpeech) {
+            await client.query(
+              'INSERT INTO sense_parts_of_speech (sense_id, part_of_speech_code) VALUES ($1, $2)',
+              [params.data.id, code],
+            )
+          }
+
+          return {
+            before: { partsOfSpeech: before.rows.map((row) => row.code) },
+            after: { partsOfSpeech: body.data.partsOfSpeech },
+          }
+        },
+      ),
+    )
   })
 
   app.put('/api/mcp/word-senses/:id/status', async (request, reply) => {
-    const params = senseParamsSchema.safeParse(request.params)
-    const body = statusSchema.safeParse(request.body)
-    if (!params.success || !body.success) return invalid(reply, { params: params.error?.flatten(), body: body.error?.flatten() })
-    return sendMutation(reply, () => mutateSense(pool, params.data.id, body.data.expectedUpdatedAt, 'set_learning_status', async (client) => {
-      const before = await client.query<{ status: string; origin: string }>(
-        'SELECT status, status_origin AS origin FROM sense_progress WHERE sense_id = $1',
-        [params.data.id],
-      )
-      await client.query(
-        `UPDATE sense_progress SET status = $2, status_origin = 'manual', updated_at = now()
+    const params = SENSE_PARAMS_SCHEMA.safeParse(request.params)
+    const body = STATUS_SCHEMA.safeParse(request.body)
+    if (!params.success || !body.success) {
+      return invalid(reply, { params: params.error?.flatten(), body: body.error?.flatten() })
+    }
+
+    return sendMutation(reply, () =>
+      mutateSense(
+        pool,
+        params.data.id,
+        body.data.expectedUpdatedAt,
+        'set_learning_status',
+        async (client) => {
+          const before = await client.query<{ status: string; origin: string }>(
+            'SELECT status, status_origin AS origin FROM sense_progress WHERE sense_id = $1',
+            [params.data.id],
+          )
+          await client.query(
+            `UPDATE sense_progress SET status = $2, status_origin = 'manual', updated_at = now()
          WHERE sense_id = $1`,
-        [params.data.id, body.data.status],
-      )
-      return { before: before.rows[0], after: { status: body.data.status, origin: 'manual' } }
-    }))
+            [params.data.id, body.data.status],
+          )
+          return { before: before.rows[0], after: { status: body.data.status, origin: 'manual' } }
+        },
+      ),
+    )
   })
 }

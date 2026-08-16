@@ -24,7 +24,9 @@ try {
       'SELECT EXISTS (SELECT 1 FROM schema_migrations WHERE version = $1) AS exists',
       [filename],
     )
-    if (alreadyApplied.rows[0]?.exists) continue
+    if (alreadyApplied.rows[0]?.exists) {
+      continue
+    }
 
     const sql = await readFile(path.join(migrationsDirectory, filename), 'utf8')
     const client = await pool.connect()

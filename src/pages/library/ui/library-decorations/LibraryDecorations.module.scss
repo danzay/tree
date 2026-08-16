@@ -1,0 +1,55 @@
+.botanical {
+  position: absolute;
+  top: 76px;
+  right: -84px;
+  width: 70px;
+  height: 76px;
+  opacity: 0.85;
+  pointer-events: none;
+
+  img {
+    position: absolute;
+    display: block;
+  }
+}
+
+.left {
+  top: 3px;
+  left: 0;
+  width: 29px;
+  height: 34px;
+}
+
+.right {
+  top: 15px;
+  left: 31px;
+  width: 28px;
+  height: 34px;
+}
+
+.stem {
+  top: 9px;
+  left: 28px;
+  width: 25px;
+  height: 51px;
+}
+
+.tape {
+  position: absolute;
+  z-index: 2;
+  top: 318px;
+  right: -108px;
+  width: 86px;
+  height: 26px;
+  border-radius: 2px;
+  background: rgba(241, 185, 142, 0.58);
+  pointer-events: none;
+  rotate: 5deg;
+}
+
+@media (max-width: 1260px) {
+  .botanical,
+  .tape {
+    display: none;
+  }
+}

@@ -21,8 +21,13 @@ if (!/^MCP_API_PORT=\d+$/m.test(envText)) {
   changed = true
 }
 
-if (changed) await writeFile(envPath, envText, { mode: 0o600 })
+if (changed) {
+  await writeFile(envPath, envText, { mode: 0o600 })
+}
+
 await chmod(envPath, 0o600)
-console.log(changed
-  ? 'Local MCP credentials and port were configured in .env without displaying secrets'
-  : 'Local MCP credentials and port are already configured')
+console.log(
+  changed
+    ? 'Local MCP credentials and port were configured in .env without displaying secrets'
+    : 'Local MCP credentials and port are already configured',
+)

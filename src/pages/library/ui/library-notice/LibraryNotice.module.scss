@@ -1,0 +1,22 @@
+@use 'sass:color';
+
+.notice {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin: 4px 0 14px;
+  padding: 12px 16px;
+  border: 1px solid color.adjust(#cbd9c3, $lightness: -5%);
+  border-radius: 10px;
+  background: var(--sage-soft);
+  color: var(--moss-dark);
+
+  button {
+    border: 0;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+    font-size: 22px;
+  }
+}

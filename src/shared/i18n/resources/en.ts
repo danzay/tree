@@ -6,42 +6,16 @@ export const EN_TRANSLATIONS = {
     treeHome: 'Tree home',
     primary: 'Primary navigation',
     dictionary: 'Dictionary',
-    materials: 'Materials',
+    library: 'Library',
     progress: 'Progress',
     openProfile: 'Open profile',
   },
   router: {
     loading: 'Loading Tree…',
   },
-  materials: {
-    title: 'My materials',
-    subtitle: 'Everything you want to read, watch, listen to, and learn from.',
-    summary: {
-      materials: 'materials',
-      words: 'words discovered',
-    },
+  libraryItem: {
     actions: {
-      add: 'Add material',
-      dismiss: 'Dismiss message',
       moreOptions: 'More options for {{title}}',
-    },
-    messages: {
-      openPending: '{{title}} will open when material detail pages are implemented.',
-      menuPending: 'Actions for {{title}} will be added with material persistence.',
-      creationPending: 'Material creation will be connected when the editor is added.',
-    },
-    search: {
-      label: 'Search materials',
-      placeholder: 'Search materials',
-    },
-    filters: {
-      label: 'Material type filters',
-      all: 'All',
-      articles: 'Articles',
-      stories: 'Stories',
-      videos: 'Videos',
-      podcasts: 'Podcasts',
-      notes: 'Notes',
     },
     type: {
       article: 'Article',
@@ -50,20 +24,50 @@ export const EN_TRANSLATIONS = {
       podcast: 'Podcast',
       note: 'Note',
     },
+  },
+  library: {
+    title: 'My library',
+    subtitle: 'Everything you want to read, watch, listen to, and learn from.',
+    summary: {
+      items: 'items',
+      words: 'words discovered',
+    },
+    actions: {
+      add: 'Add item',
+      dismiss: 'Dismiss message',
+    },
+    messages: {
+      openPending: '{{title}} will open when library item detail pages are implemented.',
+      menuPending: 'Actions for {{title}} will be added with library persistence.',
+      creationPending: 'Library item creation will be connected when the editor is added.',
+    },
+    search: {
+      label: 'Search library',
+      placeholder: 'Search library',
+    },
+    filters: {
+      label: 'Library item type filters',
+      all: 'All',
+      articles: 'Articles',
+      stories: 'Stories',
+      videos: 'Videos',
+      podcasts: 'Podcasts',
+      notes: 'Notes',
+    },
     sort: {
-      label: 'Sort materials',
+      label: 'Sort library items',
       recent: 'Recently opened',
       title: 'Title A–Z',
-      type: 'Material type',
+      type: 'Item type',
     },
     view: {
-      label: 'Material layout',
+      label: 'Library layout',
       grid: 'Grid view',
       list: 'List view',
     },
     empty: {
-      title: 'No materials found',
-      description: 'Try a different search or material type.',
+      title: 'No library items found',
+      description: 'Try a different search or item type.',
     },
   },
   dictionary: {

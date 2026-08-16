@@ -1,0 +1,32 @@
+.page {
+  position: relative;
+  width: min(1280px, calc(100% - 64px));
+  margin: 0 auto;
+  padding: 40px 0 46px;
+}
+
+.library {
+  min-height: 670px;
+  padding: 22px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--paper);
+  box-shadow: 0 7px 20px rgba(30, 43, 32, 0.08);
+}
+
+@media (max-width: 1260px) {
+  .page {
+    width: min(1120px, calc(100% - 40px));
+  }
+}
+
+@media (max-width: 720px) {
+  .page {
+    width: min(100% - 24px, 640px);
+    padding-top: 28px;
+  }
+
+  .library {
+    padding: 14px;
+  }
+}
