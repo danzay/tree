@@ -64,18 +64,18 @@ npm run dev:web
 
 ## Commands
 
-| Command | Purpose |
-|---|---|
-| `npm run db:migrate` | Apply unapplied SQL migrations transactionally. |
-| `npm run db:import` | Import or refresh SQLite vocabulary data. |
-| `npm run db:setup` | Run migrations followed by the import. |
-| `npm test` | Run transformation tests. |
-| `npm run lint` | Run ESLint. |
-| `npm run build` | Type-check the server and client, then create the production client build. |
-| `npm run mcp:token` | Generate the local MCP proxy credential without printing it. |
-| `npm run mcp` | Start the vocabulary MCP server over STDIO. |
-| `npm run mcp:smoke` | Exercise MCP discovery, read, and an audited no-op write. |
-| `npm start` | Start only the API using the current `.env`. |
+| Command              | Purpose                                                                    |
+| -------------------- | -------------------------------------------------------------------------- |
+| `npm run db:migrate` | Apply unapplied SQL migrations transactionally.                            |
+| `npm run db:import`  | Import or refresh SQLite vocabulary data.                                  |
+| `npm run db:setup`   | Run migrations followed by the import.                                     |
+| `npm test`           | Run transformation tests.                                                  |
+| `npm run lint`       | Run ESLint.                                                                |
+| `npm run build`      | Type-check the server and client, then create the production client build. |
+| `npm run mcp:token`  | Generate the local MCP proxy credential without printing it.               |
+| `npm run mcp`        | Start the vocabulary MCP server over STDIO.                                |
+| `npm run mcp:smoke`  | Exercise MCP discovery, read, and an audited no-op write.                  |
+| `npm start`          | Start only the API using the current `.env`.                               |
 
 ## API
 
@@ -170,12 +170,12 @@ Definitions remain `NULL` and collocations remain empty until an approved source
 
 ## Learning status mapping
 
-| Imported source state | Application status |
-|---|---|
-| Not started | `new` |
-| Active learning steps | `learning` |
-| Learned through review | `learned` |
-| Marked as already known | `known` |
+| Imported source state   | Application status |
+| ----------------------- | ------------------ |
+| Not started             | `new`              |
+| Active learning steps   | `learning`         |
+| Learned through review  | `learned`          |
+| Marked as already known | `known`            |
 
 The application also supports `reviewing` and `suspended` for future study workflows. Progress is stored per sense so one meaning can be known while another meaning of the same spelling remains new.
 
