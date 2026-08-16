@@ -1,6 +1,6 @@
 # Tree project rules
 
-These instructions apply to the entire repository. Preserve existing work and follow the current FSD-lite boundaries (`app`, `pages`, `entities`, and `shared`).
+These instructions apply to the entire repository. The React client lives in `client/` and the Kotlin Spring Boot backend lives in `server/`. Preserve existing work and follow the client's current FSD-lite boundaries (`app`, `pages`, `entities`, and `shared`).
 
 ## Components and architecture
 
@@ -39,5 +39,6 @@ These instructions apply to the entire repository. Preserve existing work and fo
 
 ## Quality checks
 
-- Run `npm run format`, `npm run lint`, `npm test`, and `npm run build` after a relevant implementation change.
+- Run `npm run format`, `npm run lint`, `npm test`, and `npm run build` from `client/` after a relevant frontend change.
+- Run `./gradlew test` and `./gradlew build` from `server/` after a relevant backend change.
 - Do not expose `.env` values. Keep `.env` files ignored and browser code separated from direct PostgreSQL access.

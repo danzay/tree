@@ -1,7 +1,7 @@
 # Tree Project Plan
 
-Status: planning  
-Last updated: 2026-08-14
+Status: implementation  
+Last updated: 2026-08-16
 
 This document is the living implementation plan for Tree. Decisions should be
 recorded here before large implementation changes begin.
@@ -18,19 +18,17 @@ Planned product areas:
 - separate word senses when spelling, meaning, part of speech, or CEFR level differs;
 - article/content storage with vocabulary highlighting and sentence annotations;
 - a PixiJS progress tree in which every clickable dot represents one word sense;
-- controlled GPT/Codex access through a local MCP adapter and protected API;
+- backend-controlled material analysis through the OpenAI API;
 - future review scheduling and learning-event history.
 
 ## Current state
 
-- React, TypeScript, and Vite provide the browser application.
+- React, TypeScript, and Vite provide the browser application in `client/`.
 - PostgreSQL is the application database.
-- The current MVP API is written in TypeScript with Fastify.
-- The current server already uses input validation, parameterized SQL,
-  transactions, optimistic concurrency, and assistant-change auditing.
-- A local TypeScript MCP server acts as a proxy for vocabulary reads and updates.
-
-The current Node API should remain usable while the permanent backend is built.
+- The Kotlin Spring Boot API lives in `server/` and owns database access.
+- Flyway has adopted the existing schema, and the first Kotlin endpoints preserve
+  health, statistics, word search, and word-sense reads.
+- The temporary TypeScript backend and integration adapter have been removed.
 
 ## Frontend architecture decision
 
@@ -139,27 +137,22 @@ Kotlin Spring Boot API
         v
 PostgreSQL
 
-GPT / Codex
+Kotlin background worker
         |
         v
-Local TypeScript MCP adapter
-        |
-        v
-Protected Kotlin API
+OpenAI API
 ```
 
 The Kotlin API is the single authority for validation, authorization,
 transactions, status changes, and audit logging. Neither the React browser client
-nor GPT/MCP receives PostgreSQL credentials or connects directly to PostgreSQL.
-
-The MCP server may remain TypeScript because it is a small protocol adapter using
-the MCP SDK. It must call protected Kotlin endpoints and must not duplicate domain
-logic.
+nor an AI model receives PostgreSQL credentials or connects directly to PostgreSQL.
+For material analysis, Kotlin sends approved source content to the OpenAI API,
+validates structured output, and stores it as a reviewable draft.
 
 ## Suggested Kotlin module layout
 
 ```text
-backend/
+server/
   build.gradle.kts
   src/main/kotlin/.../
     auth/
@@ -212,8 +205,8 @@ engine is implemented.
 
 ## API boundaries
 
-The public browser API and protected assistant API should share application
-services but have separate authorization policies.
+The browser API and background analysis workers share application services. Only
+the Kotlin backend may call external AI services or mutate stored analysis data.
 
 Expected API areas:
 
@@ -223,7 +216,7 @@ Expected API areas:
 - user-specific learning status and review activity;
 - article CRUD, document content, highlights, and annotations;
 - compact progress-tree data;
-- assistant/MCP reads and controlled mutations;
+- background material-analysis jobs and reviewable AI suggestions;
 - audit history for assistant changes.
 
 All request input must be validated. SQL must remain parameterized. Mutation
@@ -261,22 +254,16 @@ duplicated.
 
 The editor library and durable annotation-anchor format remain open decisions.
 
-## Migration strategy from the MVP API
+## Kotlin migration status
 
-1. Document the current routes as an OpenAPI contract.
-2. Create the Kotlin backend alongside the existing application.
-3. Connect Kotlin to the existing PostgreSQL database; do not create a second copy
-   of production data.
-4. Adopt or baseline the existing migrations before Flyway becomes authoritative.
-5. Implement health and read-only word endpoints first.
-6. Add status mutations and protected assistant endpoints.
-7. Run contract and integration tests against the Node and Kotlin implementations.
-8. Point React and the MCP adapter to the Kotlin API in a test environment.
-9. Verify counts, behavior, authorization, concurrency, and audit history.
-10. Switch production traffic to Kotlin and retain a rollback path.
-11. Remove the Node API only after parity and production verification.
-
-There must be no long-running dual-write arrangement between Node and Kotlin.
+1. The React/Vite application has moved to `client/`.
+2. The Kotlin Spring Boot backend has replaced the temporary Node API in `server/`.
+3. Flyway baselines the populated PostgreSQL schema at version 3 and owns future
+   migrations.
+4. Health, statistics, word search, and word-sense reads are the first migrated
+   endpoints.
+5. Authentication, OpenAPI generation, status mutations, and material analysis
+   remain future modules.
 
 ## Production requirements
 
@@ -315,6 +302,6 @@ Before public deployment:
 
 ## Implementation rule
 
-Do not begin the Kotlin migration merely by translating route files line by line.
-First finalize the domain rules and OpenAPI contract, then implement one module at
-a time with tests and observable parity against the existing behavior.
+Continue the Kotlin backend one module at a time. Finalize each module's domain
+rules and OpenAPI contract before adding mutations, and cover new behavior with
+tests.

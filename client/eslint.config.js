@@ -61,28 +61,4 @@ export default defineConfig([
       '@stylistic/jsx-one-expression-per-line': ['error', { allow: 'single-child' }],
     },
   },
-  {
-    files: ['server/**/*.ts'],
-    extends: [js.configs.recommended, tseslint.configs.recommended],
-    languageOptions: {
-      globals: globals.node,
-    },
-    plugins: {
-      '@stylistic': stylistic,
-    },
-    rules: {
-      curly: ['error', 'all'],
-      eqeqeq: ['error', 'always'],
-      'no-else-return': 'error',
-      'no-nested-ternary': 'error',
-      'no-unneeded-ternary': 'error',
-      'object-shorthand': 'error',
-      'prefer-const': 'error',
-      '@stylistic/object-curly-spacing': ['error', 'always'],
-      '@stylistic/padding-line-between-statements': [
-        'error',
-        { blankLine: 'always', prev: 'block-like', next: '*' },
-      ],
-    },
-  },
 ])

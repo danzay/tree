@@ -1,182 +1,82 @@
-# Oxford vocabulary app
+# Tree
 
-React + TypeScript vocabulary browser backed by a server-side Fastify API and PostgreSQL. The browser never receives the database connection string and never connects directly to PostgreSQL.
+Tree is a React vocabulary application backed by a Kotlin Spring Boot API and PostgreSQL. The browser communicates only with the API and never receives database credentials.
+
+## Repository layout
+
+```text
+client/  React, TypeScript, Vite, Zustand, React Aria, and SCSS
+server/  Kotlin, Spring Boot, JDBC, Flyway, and PostgreSQL
+```
 
 ## Requirements
 
 - Node.js 22.13.x or 24+
+- JDK 17+
 - PostgreSQL 14+
 
 ## Environment
 
-Copy `.env.example` to `.env` and fill in local values:
+Copy `.env.example` to `.env` and configure the local database URL:
 
 ```dotenv
 DATABASE_URL=postgresql://user:password@localhost:5432/vocabulary
 PORT=3001
-MCP_API_TOKEN=generate-with-npm-run-mcp-token
-MCP_API_PORT=3102
-MCP_HTTP_HOST=127.0.0.1
-MCP_HTTP_PORT=3103
 ```
 
-`.env` and `.env.*` are ignored by Git; `.env.example` is the only exception and contains placeholders only. Do not use a `VITE_` prefix for `DATABASE_URL`, because Vite exposes such variables to browser code.
-
-## Install and initialize
-
-```bash
-npm install
-npm run db:migrate
-```
-
-The application now treats PostgreSQL as its vocabulary source of truth. The retired SQLite
-importer is not part of setup or runtime. Migrations update the schema and preserve existing
-catalogue rows; provision a PostgreSQL backup or approved seed when creating another complete
-environment.
+`.env` and `.env.*` are ignored by Git. Do not put `DATABASE_URL` in a `VITE_` variable because Vite exposes those values to browser code.
 
 ## Run locally
 
+Start the Kotlin API from the repository root:
+
 ```bash
+set -a
+source .env
+set +a
+cd server
+./gradlew bootRun
+```
+
+Flyway baselines the existing populated database at version 3 and applies future migrations. On a new empty database, Flyway creates the complete schema from `server/src/main/resources/db/migration`.
+
+In a second terminal, start the React client:
+
+```bash
+cd client
+npm install
 npm run dev
 ```
 
-This starts:
+The client runs at `http://localhost:5173` and proxies `/api` to the Kotlin API at `http://127.0.0.1:3001`.
 
-- React/Vite at `http://localhost:5173`
-- Fastify at `http://127.0.0.1:3001`
-
-Vite proxies `/api` to Fastify, keeping database access on the server.
-
-For separate processes:
+## Checks
 
 ```bash
-npm run dev:api
-npm run dev:web
+cd client
+npm run format
+npm run lint
+npm test
+npm run build
 ```
 
-## Commands
-
-| Command                  | Purpose                                                                    |
-| ------------------------ | -------------------------------------------------------------------------- |
-| `npm run db:migrate`     | Apply unapplied SQL migrations transactionally.                            |
-| `npm test`               | Run server tests.                                                          |
-| `npm run lint`           | Run ESLint.                                                                |
-| `npm run build`          | Type-check the server and client, then create the production client build. |
-| `npm run mcp:token`      | Generate the local MCP proxy credential without printing it.               |
-| `npm run mcp`            | Start the vocabulary MCP server over STDIO.                                |
-| `npm run mcp:http`       | Start the vocabulary MCP server over Streamable HTTP.                      |
-| `npm run mcp:http:smoke` | Verify HTTP authentication, initialization, and tool discovery.            |
-| `npm run mcp:smoke`      | Exercise MCP discovery, read, and an audited no-op write.                  |
-| `npm start`              | Start only the API using the current `.env`.                               |
+```bash
+cd server
+./gradlew test
+./gradlew build
+```
 
 ## API
 
-### Health
+- `GET /api/health` checks API and database reachability.
+- `GET /api/stats` returns vocabulary totals by level and status.
+- `GET /api/words` searches and filters word senses.
+- `GET /api/words/{id}` returns one word sense.
 
-```http
-GET /api/health
-```
+Search parameters are validated, and database values are passed through named SQL parameters. Separate senses and duplicate spellings remain separate records.
 
-### Statistics
+## Data model and migrations
 
-```http
-GET /api/stats
-```
+The existing PostgreSQL schema remains the source of truth. Flyway migrations are forward-only; add a new numbered migration rather than editing a migration already applied by Flyway. Back up production data before a destructive schema change.
 
-Returns totals by CEFR level, learning status, and reconciliation type.
-
-### Search senses
-
-```http
-GET /api/words?q=sight&level=B1&status=learned&partOfSpeech=noun&language=ru&limit=30&offset=0
-```
-
-Supported query parameters:
-
-- `q`: case-insensitive headword substring, at most 100 characters; exact and prefix matches rank first
-- `level`: `A1`, `A2`, `B1`, `B2`, `C1`, or `C2`
-- `status`: `new`, `learning`, `reviewing`, `learned`, `known`, or `suspended`
-- `partOfSpeech`: normalized grammatical class such as `noun` or `verb`
-- `language`: translation language code; defaults to `ru`
-- `limit`: 1–100; defaults to 30
-- `offset`: 0–100,000
-- `includeNeedsReview`: set to `true` to include provisional ambiguous senses
-
-### Get one sense
-
-```http
-GET /api/words/123?language=ru
-```
-
-All request values are validated before use. SQL data values use PostgreSQL parameters rather than string interpolation.
-
-## MCP access for ChatGPT and Codex
-
-The MCP process never connects to PostgreSQL. It calls a private Fastify proxy on `127.0.0.1`, and only that proxy uses `DATABASE_URL`:
-
-```text
-ChatGPT/Codex -> MCP (STDIO or Streamable HTTP) -> authenticated localhost API -> PostgreSQL
-```
-
-Generate a credential once, if one is not already configured:
-
-```bash
-npm run mcp:token
-```
-
-The command stores the generated credential only in the ignored `.env` file and does not print it. The MCP process automatically starts its private API on `MCP_API_PORT` when needed and stops that managed process when MCP exits. The regular browser API may continue to use `PORT` independently.
-
-Register the server globally for local ChatGPT/Codex clients:
-
-```bash
-codex mcp add oxford-vocabulary -- /Users/lialis/projects/tree/node_modules/.bin/tsx --env-file=/Users/lialis/projects/tree/.env /Users/lialis/projects/tree/server/mcp.ts
-```
-
-This repository is already registered on the current machine. Restart ChatGPT/Codex, or start a new task, if the server does not appear immediately. Ask the model to use `oxford-vocabulary` explicitly when you want it to inspect or change vocabulary.
-
-For a remote MCP client such as a ChatGPT custom app, start the Streamable HTTP transport:
-
-```bash
-npm run mcp:http
-```
-
-Its local endpoint is `http://127.0.0.1:3103/mcp`. The endpoint accepts MCP `GET`, `POST`, and `DELETE` requests and requires `Authorization: Bearer <token>`. It uses `MCP_HTTP_TOKEN` when configured and otherwise reuses `MCP_API_TOKEN`; never put either token in a prompt, URL, or committed file. The unauthenticated `/health` endpoint exposes only service availability.
-
-ChatGPT cannot reach `127.0.0.1` on your computer. Put this server behind an authenticated HTTPS tunnel for development, or deploy the MCP proxy for persistent use, and give ChatGPT the resulting HTTPS `/mcp` URL. Keep PostgreSQL and the private API unexposed. `MCP_HTTP_HOST` defaults to `127.0.0.1`; only change it when the deployment network is already protected.
-
-Available tools are deliberately narrow: search vocabulary, read one sense, and update its definition, transcription, CEFR level, translation, collocations, parts of speech, or learning status. There is no arbitrary SQL or delete tool. Every write:
-
-- targets a sense ID, so duplicate spellings and distinct senses remain separate;
-- requires the last observed `updatedAt` value, preventing silent stale overwrites;
-- validates input and uses parameterized SQL;
-- runs in a transaction and records before/after data in `assistant_changes`.
-
-The MCP instructions tell the model to read a sense before changing it and never invent vocabulary facts. A user should still state the exact intended change; an MCP tool is authorization plumbing, not a source of truth.
-
-## Data model
-
-- `headwords` stores one normalized written form.
-- `senses` stores meaning-level data: English definition, transcription, CEFR level, and review state.
-- `parts_of_speech` and `sense_parts_of_speech` allow a sense to have multiple grammatical classes.
-- `languages` and `sense_translations` support translations in any configured language. Imported Russian text is preserved verbatim.
-- `sense_collocations` stores future structured collocations. The source contains none, so it starts empty.
-- `sense_examples` and `example_translations` retain source example sentences.
-- `sense_progress` stores the current single-learner state for each sense.
-- `review_events` is the append-only home for future study activity.
-- `assistant_changes` is the audit trail for updates made through the protected MCP proxy.
-- `source_import_records`, `sense_sources`, and `import_runs` preserve historical catalogue provenance without shaping the application model.
-- `reconciliation_items` contains unresolved catalogue anomalies. The former 57 official B1–C1 gaps are now first-class catalogue senses.
-- `import_issues` retains historical row-level import warnings or errors.
-
-Definitions remain `NULL` and collocations remain empty until an approved source supplies them. They are never inferred from Russian translations or example sentences.
-
-## Learning statuses
-
-The application stores explicit `new`, `learning`, `reviewing`, `learned`, `known`, and
-`suspended` statuses in PostgreSQL. Progress is stored per sense so one meaning can be known
-while another meaning of the same spelling remains new. Provisional senses with
-`review_status = 'needs_review'` remain excluded from ordinary word searches until reviewed.
-
-## Migrations
-
-Migration files live in `server/migrations` and are applied in filename order. Each migration runs in a transaction and is recorded in `schema_migrations`. Migrations are forward-only: make a new numbered migration for schema changes instead of editing an already-applied migration. Back up production data before applying destructive future migrations.
+Future material analysis will be initiated by the Kotlin backend through the OpenAI API. The backend will validate structured results and store them as reviewable drafts instead of allowing a model to connect directly to PostgreSQL.
