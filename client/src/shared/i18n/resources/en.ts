@@ -109,12 +109,6 @@ export const EN_TRANSLATIONS = {
       title: 'Vocabulary library',
       description: 'Search imported word senses by CEFR level and learning status.',
     },
-    stats: {
-      label: 'Vocabulary statistics',
-      senses: 'senses',
-      headwords: 'headwords',
-      officialGaps: 'official gaps',
-    },
     filters: {
       label: 'Vocabulary filters',
       search: 'Search',
@@ -147,14 +141,32 @@ export const EN_TRANSLATIONS = {
       suspended: 'suspended',
     },
     errors: {
-      statistics: 'Could not load vocabulary statistics',
       vocabulary: 'Could not load vocabulary',
       connection: 'Could not connect to the server',
     },
   },
   progress: {
     eyebrow: 'Progress',
-    title: 'Your vocabulary tree is growing',
-    description: 'The interactive PixiJS tree will be implemented in a later phase.',
+    title: 'Your vocabulary is growing',
+    description: 'See how much of every Oxford level you already know and what remains to learn.',
+    loading: 'Loading your progress…',
+    overview: {
+      eyebrow: 'Overall progress',
+      title: 'All vocabulary',
+      total: 'All words',
+      known: 'Already known',
+      left: 'Left to learn',
+      progressLabel: 'Overall vocabulary progress',
+    },
+    levels: {
+      title: 'Progress by level',
+      description: 'Completed words at each CEFR level.',
+      count: '{{known}} of {{total}} words',
+      progressLabel: '{{level}} vocabulary progress',
+    },
+    errors: {
+      title: 'Progress unavailable',
+      loading: 'Could not load progress statistics',
+    },
   },
 } as const

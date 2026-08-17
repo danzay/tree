@@ -21,6 +21,14 @@ export interface StatsResponse {
   byLevel: Record<string, number>
   byStatus: Record<string, number>
   reconciliation: Record<string, number>
+  levelProgress: LevelProgress[]
+}
+
+export interface LevelProgress {
+  level: string
+  total: number
+  known: number
+  leftToLearn: number
 }
 
 export interface WordSenseQuery {

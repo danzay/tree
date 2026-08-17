@@ -1,3 +1,9 @@
 export { getVocabularyStats, getWordSenses } from './api/word-sense-api'
 export { WordSenseCard } from './ui/word-sense-card/WordSenseCard'
-export type { StatsResponse, VocabularySense, WordsResponse, WordSenseQuery } from './model/types'
+export type {
+  LevelProgress,
+  StatsResponse,
+  VocabularySense,
+  WordsResponse,
+  WordSenseQuery,
+} from './model/types'

@@ -1,0 +1,99 @@
+@use '@/shared/styles/mixins';
+
+.card {
+  padding: 32px 34px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--paper);
+  box-shadow: 0 8px 24px rgba(30, 43, 32, 0.08);
+}
+
+.heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 24px;
+
+  p {
+    margin: 0 0 5px;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  h2 {
+    margin: 0;
+    color: var(--moss-dark);
+    font-size: 30px;
+    @include mixins.serif-heading;
+  }
+
+  strong {
+    color: var(--moss-dark);
+    font-size: 34px;
+    font-weight: 500;
+    @include mixins.serif-heading;
+  }
+}
+
+.progress {
+  width: 100%;
+  height: 30px;
+  margin: 24px 0 28px;
+  overflow: hidden;
+  border: 0;
+  border-radius: 999px;
+  background: var(--sage);
+
+  &::-webkit-progress-bar {
+    border-radius: 999px;
+    background: var(--sage);
+  }
+
+  &::-webkit-progress-value {
+    border-radius: 999px;
+    background: var(--moss);
+  }
+
+  &::-moz-progress-bar {
+    border-radius: 999px;
+    background: var(--moss);
+  }
+}
+
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin: 0;
+
+  div {
+    padding: 18px 20px;
+    border-radius: 12px;
+    background: var(--sage-soft);
+  }
+
+  dt {
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  dd {
+    margin: 7px 0 0;
+    color: var(--moss-dark);
+    font-size: 28px;
+    font-weight: 700;
+  }
+}
+
+@media (max-width: 720px) {
+  .card {
+    padding: 24px 20px;
+  }
+
+  .metrics {
+    grid-template-columns: 1fr;
+  }
+}

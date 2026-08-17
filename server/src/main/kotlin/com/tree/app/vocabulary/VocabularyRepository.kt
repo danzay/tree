@@ -40,6 +40,32 @@ class VocabularyRepository(
                 GROUP BY issue_type
                 """.trimIndent(),
             ),
+            levelProgress = getLevelProgress(),
+        )
+    }
+
+    private fun getLevelProgress(): List<LevelProgressResponse> = jdbc.jdbcTemplate.query(
+        """
+        WITH levels(level, position) AS (
+          VALUES ('A1', 1), ('A2', 2), ('B1', 3), ('B2', 4), ('C1', 5), ('C2', 6)
+        )
+        SELECT levels.level,
+               count(s.id) AS total,
+               count(s.id) FILTER (WHERE sp.status IN ('known', 'learned')) AS known
+        FROM levels
+        LEFT JOIN senses s ON s.cefr_level = levels.level
+        LEFT JOIN sense_progress sp ON sp.sense_id = s.id
+        GROUP BY levels.level, levels.position
+        ORDER BY levels.position
+        """.trimIndent(),
+    ) { resultSet, _ ->
+        val total = resultSet.getLong("total")
+        val known = resultSet.getLong("known")
+        LevelProgressResponse(
+            level = resultSet.getString("level"),
+            total = total,
+            known = known,
+            leftToLearn = total - known,
         )
     }
 

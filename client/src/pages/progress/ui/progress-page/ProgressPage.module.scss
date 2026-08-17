@@ -1,13 +1,28 @@
 @use '@/shared/styles/mixins';
 
 .page {
-  width: min(880px, calc(100% - 40px));
+  width: min(1160px, calc(100% - 64px));
   margin: 0 auto;
-  padding: 100px 0;
+  padding: 54px 0 70px;
+}
+
+.content {
+  display: grid;
+  gap: 28px;
+  margin-top: 38px;
+}
+
+.state {
+  display: grid;
+  width: min(720px, calc(100% - 40px));
+  min-height: 440px;
+  margin: 0 auto;
+  align-content: center;
+  justify-items: center;
+  text-align: center;
 
   h1 {
-    margin: 8px 0;
-    font-size: 44px;
+    color: var(--moss-dark);
     @include mixins.serif-heading;
   }
 
@@ -16,9 +31,9 @@
   }
 }
 
-.eyebrow {
-  color: var(--moss) !important;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+@media (max-width: 720px) {
+  .page {
+    width: min(100% - 24px, 680px);
+    padding-top: 34px;
+  }
 }

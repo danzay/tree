@@ -1,11 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import {
-  getVocabularyStats,
-  getWordSenses,
-  type StatsResponse,
-  type WordsResponse,
-} from '@/entities/word-sense'
+import { getWordSenses, type WordsResponse } from '@/entities/word-sense'
 import { getRequestErrorMessage, isRequestCanceled } from '@/shared/api/api-client'
 
 export function useDictionaryPage() {
@@ -14,29 +9,8 @@ export function useDictionaryPage() {
   const [level, setLevel] = useState('')
   const [status, setStatus] = useState('')
   const [words, setWords] = useState<WordsResponse>({ items: [], total: 0 })
-  const [stats, setStats] = useState<StatsResponse | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    const controller = new AbortController()
-
-    getVocabularyStats(controller.signal)
-      .then(setStats)
-      .catch((caught: unknown) => {
-        if (!isRequestCanceled(caught)) {
-          setError(
-            getRequestErrorMessage(
-              caught,
-              t('dictionary.errors.statistics'),
-              t('dictionary.errors.connection'),
-            ),
-          )
-        }
-      })
-
-    return () => controller.abort()
-  }, [t])
 
   useEffect(() => {
     const controller = new AbortController()
@@ -78,7 +52,6 @@ export function useDictionaryPage() {
     setLevel,
     setSearch,
     setStatus,
-    stats,
     status,
     words,
   }

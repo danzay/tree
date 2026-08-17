@@ -31,6 +31,14 @@ data class StatsResponse(
     val byLevel: Map<String, Long>,
     val byStatus: Map<String, Long>,
     val reconciliation: Map<String, Long>,
+    val levelProgress: List<LevelProgressResponse>,
+)
+
+data class LevelProgressResponse(
+    val level: String,
+    val total: Long,
+    val known: Long,
+    val leftToLearn: Long,
 )
 
 data class WordSearchQuery(

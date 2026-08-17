@@ -48,7 +48,7 @@ private class RecordingVocabularyReader : VocabularyReader {
 
     override fun checkHealth() = Unit
 
-    override fun getStats() = StatsResponse(0, 0, emptyMap(), emptyMap(), emptyMap())
+    override fun getStats() = StatsResponse(0, 0, emptyMap(), emptyMap(), emptyMap(), emptyList())
 
     override fun search(query: WordSearchQuery): WordsResponse {
         lastQuery = query
