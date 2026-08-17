@@ -3,7 +3,16 @@
   border-radius: 5px;
   box-decoration-break: clone;
   color: inherit;
+  cursor: pointer;
   -webkit-box-decoration-break: clone;
+
+  &:hover {
+    box-shadow: 0 0 0 2px rgba(36, 92, 53, 0.18);
+  }
+}
+
+.selected {
+  box-shadow: 0 0 0 2px var(--moss);
 }
 
 .a1 {

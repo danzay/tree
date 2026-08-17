@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router'
 import { getLibraryItem, type LibraryItemDetail } from '@/entities/library-item'
 import { getRequestErrorMessage, isRequestCanceled } from '@/shared/api/api-client'
+import { useArticleWord } from './use-article-word'
 
 export function useArticlePage() {
   const { t } = useTranslation()
@@ -12,6 +13,9 @@ export function useArticlePage() {
   const [article, setArticle] = useState<LibraryItemDetail | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
+  const [selectedSenseId, setSelectedSenseId] = useState<number | null>(null)
+  const [selectedText, setSelectedText] = useState<string | null>(null)
+  const selectedWord = useArticleWord(selectedSenseId)
 
   useEffect(() => {
     const controller = new AbortController()
@@ -45,5 +49,30 @@ export function useArticlePage() {
   const displayError = hasInvalidItemId ? t('article.errors.notFound') : error
   const displayLoading = hasInvalidItemId ? false : loading
 
-  return { article, error: displayError, loading: displayLoading }
+  const closeSidebar = () => {
+    setSelectedSenseId(null)
+    setSelectedText(null)
+  }
+
+  const selectText = (text: string) => {
+    setSelectedSenseId(null)
+    setSelectedText(text)
+  }
+
+  const selectWord = (senseId: number) => {
+    setSelectedText(null)
+    setSelectedSenseId(senseId)
+  }
+
+  return {
+    article,
+    closeSidebar,
+    error: displayError,
+    loading: displayLoading,
+    selectedSenseId,
+    selectedText,
+    selectedWord,
+    selectText,
+    selectWord,
+  }
 }

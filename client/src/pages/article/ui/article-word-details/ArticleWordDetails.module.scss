@@ -1,0 +1,86 @@
+@use '@/shared/styles/mixins';
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding-right: 34px;
+}
+
+.title {
+  margin: 0;
+  color: var(--moss-dark);
+  font-size: 36px;
+  @include mixins.serif-heading;
+}
+
+.transcription {
+  margin: 7px 0 0;
+  color: var(--muted);
+}
+
+.level {
+  flex: 0 0 auto;
+  padding: 5px 9px;
+  border-radius: 7px;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 750;
+}
+
+.a1 {
+  background: var(--level-a1);
+}
+
+.a2 {
+  background: var(--level-a2);
+}
+
+.b1 {
+  background: var(--level-b1);
+}
+
+.b2 {
+  background: var(--level-b2);
+}
+
+.c1 {
+  background: var(--level-c1);
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.tag {
+  padding: 4px 9px;
+  border-radius: 999px;
+  background: var(--sage-soft);
+  color: var(--moss-dark);
+  font-size: 12px;
+}
+
+.section {
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+  margin-top: 20px;
+}
+
+.sectionTitle {
+  margin: 0 0 8px;
+  color: var(--moss-dark);
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.sectionText {
+  margin: 0;
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.55;
+}

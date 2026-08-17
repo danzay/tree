@@ -3,8 +3,8 @@ import { Link } from 'react-router'
 import { APP_ROUTE_PATHS } from '@/app/route-consts'
 import { useArticlePage } from '../../model/use-article-page'
 import { ArticleContent } from '../article-content/ArticleContent'
-import { ArticleCover } from '../article-cover/ArticleCover'
 import { ArticleHeader } from '../article-header/ArticleHeader'
+import { ArticleSidebar } from '../article-sidebar/ArticleSidebar'
 import styles from './ArticlePage.module.scss'
 
 export function ArticlePage() {
@@ -39,9 +39,22 @@ export function ArticlePage() {
       <div className={styles.layout}>
         <article className={styles.paper}>
           <ArticleHeader item={page.article.item} />
-          <ArticleContent blocks={page.article.blocks} />
+          <ArticleContent
+            blocks={page.article.blocks}
+            selectedSenseId={page.selectedSenseId}
+            onTextSelect={page.selectText}
+            onWordSelect={page.selectWord}
+          />
         </article>
-        <ArticleCover item={page.article.item} />
+        <ArticleSidebar
+          item={page.article.item}
+          selectedSenseId={page.selectedSenseId}
+          selectedText={page.selectedText}
+          wordError={page.selectedWord.error}
+          wordLoading={page.selectedWord.loading}
+          wordSense={page.selectedWord.sense}
+          onWordClose={page.closeSidebar}
+        />
       </div>
     </section>
   )

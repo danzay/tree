@@ -8,6 +8,7 @@ export interface VocabularySense {
   status: string
   partsOfSpeech: string[]
   translations: Array<{ language: string; text: string }>
+  collocations: string[]
 }
 
 export interface WordsResponse {

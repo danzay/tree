@@ -94,6 +94,23 @@ export const EN_TRANSLATIONS = {
       title: 'Vocabulary levels',
       description: 'New and learning words are coloured by CEFR level.',
     },
+    wordPanel: {
+      label: 'Word information',
+      close: 'Close word information',
+      loading: 'Loading word information…',
+      translation: 'Translation',
+      definition: 'Definition',
+      collocations: 'Collocations',
+      errors: {
+        title: 'Word information unavailable',
+        loading: 'Could not load word information',
+      },
+    },
+    selectionPanel: {
+      eyebrow: 'Selected text',
+      title: '“{{text}}”',
+      message: 'Translation for this word or phrase will be added soon.',
+    },
     actions: {
       backToLibrary: 'Back to library',
     },
