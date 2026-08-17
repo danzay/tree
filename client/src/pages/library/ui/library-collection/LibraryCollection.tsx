@@ -4,19 +4,40 @@ import type { LibraryViewMode } from '../../model/library-page-store'
 import styles from './LibraryCollection.module.scss'
 
 interface LibraryCollectionProps {
+  error: string | null
   items: LibraryItem[]
+  loading: boolean
   view: LibraryViewMode
   onOpenItem: (item: LibraryItem) => void
   onOpenItemMenu: (item: LibraryItem) => void
 }
 
 export function LibraryCollection({
+  error,
   items,
+  loading,
   view,
   onOpenItem,
   onOpenItemMenu,
 }: LibraryCollectionProps) {
   const { t } = useTranslation()
+
+  if (loading) {
+    return (
+      <div className={styles.empty} role="status">
+        <p>{t('library.loading')}</p>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className={styles.empty} role="alert">
+        <h2>{t('library.errors.title')}</h2>
+        <p>{error}</p>
+      </div>
+    )
+  }
 
   if (items.length === 0) {
     return (

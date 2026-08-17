@@ -1,7 +1,10 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useLibraryItemStore, type LibraryItem } from '@/entities/library-item'
+import { useNavigate } from 'react-router'
+import type { LibraryItem } from '@/entities/library-item'
+import { getLibraryItemPath } from '@/app/route-consts'
 import { useLibraryPageStore } from '../../model/library-page-store'
+import { useLibraryItems } from '../../model/use-library-items'
 import { useLibraryPage } from '../../model/use-library-page'
 import { LibraryCollection } from '../library-collection/LibraryCollection'
 import { LibraryDecorations } from '../library-decorations/LibraryDecorations'
@@ -12,14 +15,15 @@ import styles from './LibraryPage.module.scss'
 
 export function LibraryPage() {
   const { t } = useTranslation()
-  const items = useLibraryItemStore((state) => state.items)
+  const navigate = useNavigate()
+  const libraryItems = useLibraryItems()
   const view = useLibraryPageStore((state) => state.viewMode)
   const setView = useLibraryPageStore((state) => state.setViewMode)
   const [notice, setNotice] = useState<string | null>(null)
-  const page = useLibraryPage(items)
+  const page = useLibraryPage(libraryItems.items)
 
   const openItem = (item: LibraryItem) => {
-    setNotice(t('library.messages.openPending', { title: item.title }))
+    navigate(getLibraryItemPath(item.id))
   }
 
   const openItemMenu = (item: LibraryItem) => {
@@ -56,7 +60,9 @@ export function LibraryPage() {
           onViewChange={setView}
         />
         <LibraryCollection
+          error={libraryItems.error}
           items={page.visibleItems}
+          loading={libraryItems.loading}
           view={view}
           onOpenItem={openItem}
           onOpenItemMenu={openItemMenu}

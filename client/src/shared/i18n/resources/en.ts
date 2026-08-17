@@ -14,6 +14,9 @@ export const EN_TRANSLATIONS = {
     loading: 'Loading Tree…',
   },
   libraryItem: {
+    coverAlt: 'Cover for {{title}}',
+    readTime_one: '{{count}} min read',
+    readTime_other: '{{count}} min read',
     actions: {
       moreOptions: 'More options for {{title}}',
     },
@@ -23,6 +26,11 @@ export const EN_TRANSLATIONS = {
       video: 'Video',
       podcast: 'Podcast',
       note: 'Note',
+    },
+    status: {
+      notStarted: 'Not started',
+      inProgress: 'In progress',
+      completed: 'Completed',
     },
   },
   library: {
@@ -37,7 +45,6 @@ export const EN_TRANSLATIONS = {
       dismiss: 'Dismiss message',
     },
     messages: {
-      openPending: '{{title}} will open when library item detail pages are implemented.',
       menuPending: 'Actions for {{title}} will be added with library persistence.',
       creationPending: 'Library item creation will be connected when the editor is added.',
     },
@@ -68,6 +75,32 @@ export const EN_TRANSLATIONS = {
     empty: {
       title: 'No library items found',
       description: 'Try a different search or item type.',
+    },
+    loading: 'Loading your library…',
+    errors: {
+      title: 'Library unavailable',
+      loading: 'Could not load the library',
+    },
+  },
+  article: {
+    loading: 'Loading article…',
+    breadcrumbs: {
+      label: 'Article navigation',
+    },
+    about: {
+      topic: 'Topic',
+    },
+    vocabulary: {
+      title: 'Vocabulary levels',
+      description: 'New and learning words are coloured by CEFR level.',
+    },
+    actions: {
+      backToLibrary: 'Back to library',
+    },
+    errors: {
+      title: 'Article unavailable',
+      loading: 'Could not load the article',
+      notFound: 'This article could not be found.',
     },
   },
   dictionary: {

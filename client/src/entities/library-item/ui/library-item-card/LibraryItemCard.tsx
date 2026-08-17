@@ -1,7 +1,11 @@
 import { useTranslation } from 'react-i18next'
 import { Button } from 'react-aria-components/Button'
 import type { LibraryItem } from '../../model/types'
-import { COVER_SOURCES, LIBRARY_ITEM_MENU_ICON, LIBRARY_ITEM_TYPE_TRANSLATION_KEYS } from './consts'
+import {
+  LIBRARY_ITEM_MENU_ICON,
+  LIBRARY_ITEM_STATUS_TRANSLATION_KEYS,
+  LIBRARY_ITEM_TYPE_TRANSLATION_KEYS,
+} from './consts'
 import styles from './LibraryItemCard.module.scss'
 
 interface LibraryItemCardProps {
@@ -15,9 +19,11 @@ export function LibraryItemCard({ item, layout, onOpen, onOpenMenu }: LibraryIte
   const { t } = useTranslation()
   const isListLayout = layout === 'list'
   const cardClassName = isListLayout ? `${styles.card} ${styles.list}` : styles.card
-  const badgeVariant = styles[item.type.toLocaleLowerCase()]
+  const badgeVariant = styles[item.type]
   const badgeClassName = `${styles.badge} ${badgeVariant}`
   const itemTypeLabel = t(LIBRARY_ITEM_TYPE_TRANSLATION_KEYS[item.type])
+  const readingStatusLabel = t(LIBRARY_ITEM_STATUS_TRANSLATION_KEYS[item.readingStatus])
+  const readTimeLabel = t('libraryItem.readTime', { count: item.estimatedReadMinutes })
 
   const handleOpen = () => {
     onOpen(item)
@@ -30,13 +36,17 @@ export function LibraryItemCard({ item, layout, onOpen, onOpenMenu }: LibraryIte
   return (
     <article className={cardClassName}>
       <Button className={styles.main} type="button" onPress={handleOpen}>
-        <img className={styles.cover} src={COVER_SOURCES[item.cover]} alt="" />
+        <img
+          className={styles.cover}
+          src={item.coverImagePath}
+          alt={t('libraryItem.coverAlt', { title: item.title })}
+        />
         <span className={styles.body}>
           <span className={badgeClassName}>{itemTypeLabel}</span>
           <strong className={styles.title}>{item.title}</strong>
           <span className={styles.metadata}>
-            <span>{item.detail}</span>
-            <span>{item.state}</span>
+            <span>{readTimeLabel}</span>
+            <span>{readingStatusLabel}</span>
           </span>
         </span>
       </Button>

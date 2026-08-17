@@ -1,0 +1,31 @@
+@use '@/shared/styles/mixins';
+
+.content {
+  padding: 8px 58px 64px;
+
+  h2 {
+    margin: 44px 0 14px;
+    color: var(--moss-dark);
+    font-size: 28px;
+    line-height: 1.25;
+    @include mixins.serif-heading;
+  }
+
+  p {
+    margin: 0 0 24px;
+    color: var(--ink);
+    font-size: 18px;
+    line-height: 1.85;
+  }
+}
+
+@media (max-width: 720px) {
+  .content {
+    padding: 4px 24px 40px;
+
+    p {
+      font-size: 17px;
+      line-height: 1.75;
+    }
+  }
+}

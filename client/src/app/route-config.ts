@@ -17,6 +17,13 @@ export const APP_ROUTES = [
     }),
   },
   {
+    id: APP_ROUTE_IDS.LIBRARY_ITEM,
+    Component: lazy(async () => {
+      const { ArticlePage } = await import('@/pages/article')
+      return { default: ArticlePage }
+    }),
+  },
+  {
     id: APP_ROUTE_IDS.PROGRESS,
     Component: lazy(async () => {
       const { ProgressPage } = await import('@/pages/progress')

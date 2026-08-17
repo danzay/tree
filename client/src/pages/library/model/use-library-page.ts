@@ -3,7 +3,6 @@ import type { LibraryItem, LibraryItemType } from '@/entities/library-item'
 import {
   ALL_LIBRARY_ITEMS_FILTER,
   RECENT_LIBRARY_ITEM_SORT,
-  STORIES_FILTER,
   TITLE_LIBRARY_ITEM_SORT,
   TYPE_LIBRARY_ITEM_SORT,
 } from './consts'
@@ -14,11 +13,7 @@ function singularFilter(filter: LibraryFilter): LibraryItemType | null {
     return null
   }
 
-  if (filter === STORIES_FILTER) {
-    return 'Story'
-  }
-
-  return filter.slice(0, -1) as LibraryItemType
+  return filter
 }
 
 export function useLibraryPage(items: LibraryItem[]) {
@@ -54,7 +49,9 @@ export function useLibraryPage(items: LibraryItem[]) {
         return first.title.localeCompare(second.title)
       }
 
-      return first.openedOrder - second.openedOrder
+      const firstDate = first.lastOpenedAt ?? first.updatedAt
+      const secondDate = second.lastOpenedAt ?? second.updatedAt
+      return secondDate.localeCompare(firstDate)
     })
   }, [filter, items, query, sort])
 

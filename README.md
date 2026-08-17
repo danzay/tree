@@ -31,12 +31,11 @@ PORT=3001
 Start the Kotlin API from the repository root:
 
 ```bash
-set -a
-source .env
-set +a
 cd server
 ./gradlew bootRun
 ```
+
+For local development, Spring loads the ignored root `.env` file automatically. Deployed environments should provide the same values through their secret manager or process environment.
 
 Flyway baselines the existing populated database at version 3 and applies future migrations. On a new empty database, Flyway creates the complete schema from `server/src/main/resources/db/migration`.
 
@@ -72,8 +71,10 @@ cd server
 - `GET /api/stats` returns vocabulary totals by level and status.
 - `GET /api/words` searches and filters word senses.
 - `GET /api/words/{id}` returns one word sense.
+- `GET /api/library-items` returns the saved Library catalogue.
+- `GET /api/library-items/{id}` returns one item and its ordered article blocks.
 
-Search parameters are validated, and database values are passed through named SQL parameters. Separate senses and duplicate spellings remain separate records.
+Search parameters are validated, and database values are passed through named SQL parameters. Separate senses and duplicate spellings remain separate records. Library metadata is stored separately from article blocks so future stories, videos, podcasts, and notes can share the same catalogue.
 
 ## Data model and migrations
 

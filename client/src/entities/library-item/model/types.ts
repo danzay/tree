@@ -1,15 +1,42 @@
-import { LIBRARY_ITEM_COVERS, LIBRARY_ITEM_TYPES } from './consts'
+import { LIBRARY_ITEM_READING_STATUSES, LIBRARY_ITEM_TYPES } from './consts'
 
 export type LibraryItemType = (typeof LIBRARY_ITEM_TYPES)[number]
-export type LibraryItemCover = (typeof LIBRARY_ITEM_COVERS)[number]
+export type LibraryItemReadingStatus = (typeof LIBRARY_ITEM_READING_STATUSES)[number]
 
 export interface LibraryItem {
   id: number
+  slug: string
   title: string
   type: LibraryItemType
-  detail: string
-  state: string
-  cover: LibraryItemCover
+  summary: string
+  topic: string
+  coverImagePath: string
+  estimatedReadMinutes: number
   vocabularyCount: number
-  openedOrder: number
+  readingStatus: LibraryItemReadingStatus
+  lastOpenedAt: string | null
+  updatedAt: string
+}
+
+export interface ArticleBlock {
+  position: number
+  type: 'heading' | 'paragraph'
+  text: string
+  highlights: ArticleHighlight[]
+}
+
+export type ArticleHighlightLevel = 'A1' | 'A2' | 'B1' | 'B2' | 'C1'
+
+export interface ArticleHighlight {
+  start: number
+  end: number
+  senseId: number
+  word: string
+  level: ArticleHighlightLevel
+  status: 'new' | 'learning'
+}
+
+export interface LibraryItemDetail {
+  item: LibraryItem
+  blocks: ArticleBlock[]
 }
