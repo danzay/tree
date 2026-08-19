@@ -47,6 +47,17 @@ class ArticleVocabularyMatcherTests {
         assertEquals("In fact", "In fact, this works.".substring(highlights[0].start, highlights[0].end))
     }
 
+    @Test
+    fun `matches C2 vocabulary`() {
+        val matcher = ArticleVocabularyMatcher(
+            listOf(candidate(word = "perspicacious", normalizedWord = "perspicacious", level = "C2")),
+        )
+
+        val highlight = matcher.find("A perspicacious observation.").single()
+
+        assertEquals("C2", highlight.level)
+    }
+
     private fun candidate(
         word: String,
         normalizedWord: String,

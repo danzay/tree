@@ -1,8 +1,8 @@
 import { useTranslation } from 'react-i18next'
-import type { ArticleHighlightLevel } from '@/entities/library-item'
+import { LEVEL_CLASS_NAMES, type ArticleHighlightLevel } from '@/entities/library-item'
 import type { VocabularySense } from '@/entities/word-sense'
 import { ArticleWordCollocations } from '../article-word-collocations/ArticleWordCollocations'
-import { LEVEL_CLASS_NAMES, PART_OF_SPEECH_SEPARATOR } from './consts'
+import { PART_OF_SPEECH_SEPARATOR } from './consts'
 import styles from './ArticleWordDetails.module.scss'
 
 interface ArticleWordDetailsProps {

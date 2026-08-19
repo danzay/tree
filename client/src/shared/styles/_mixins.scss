@@ -19,3 +19,29 @@
   white-space: nowrap;
   border: 0;
 }
+
+@mixin level-background-classes {
+  .a1 {
+    background: var(--level-a1);
+  }
+
+  .a2 {
+    background: var(--level-a2);
+  }
+
+  .b1 {
+    background: var(--level-b1);
+  }
+
+  .b2 {
+    background: var(--level-b2);
+  }
+
+  .c1 {
+    background: var(--level-c1);
+  }
+
+  .c2 {
+    background: var(--level-c2);
+  }
+}

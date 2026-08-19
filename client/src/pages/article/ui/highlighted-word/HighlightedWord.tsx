@@ -1,5 +1,4 @@
-import type { ArticleHighlight } from '@/entities/library-item'
-import { LEVEL_CLASS_NAMES } from './consts'
+import { LEVEL_CLASS_NAMES, type ArticleHighlight } from '@/entities/library-item'
 import styles from './HighlightedWord.module.scss'
 
 interface HighlightedWordProps {

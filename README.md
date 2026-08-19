@@ -65,6 +65,25 @@ cd server
 ./gradlew build
 ```
 
+## Vocabulary catalogue sources
+
+Words and senses live in one shared catalogue. Source-specific CEFR classifications
+are stored separately, so Oxford, ESL Lounge, an authorized Cambridge EVP import,
+and future manual entries can disagree without overwriting one another. Oxford is
+the preferred effective level where it is available.
+
+After the server has applied all Flyway migrations, import or refresh the public
+ESL Lounge A1-C2 classifications with:
+
+```bash
+python3 server/scripts/import_esl_lounge.py
+```
+
+The importer is idempotent. It maps source entries to existing senses and creates
+`needs_review` placeholder senses only when no compatible existing entry is found.
+It reads `DATABASE_URL` without printing it. Cambridge EVP data must only be added
+from an authorized export or licensed integration.
+
 ## API
 
 - `GET /api/health` checks API and database reachability.

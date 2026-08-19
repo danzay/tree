@@ -1,3 +1,9 @@
+export interface CatalogueLevel {
+  source: string
+  sourceName: string
+  level: string
+}
+
 export interface VocabularySense {
   id: string
   word: string
@@ -9,6 +15,7 @@ export interface VocabularySense {
   partsOfSpeech: string[]
   translations: Array<{ language: string; text: string }>
   collocations: string[]
+  catalogueLevels: CatalogueLevel[]
 }
 
 export interface WordsResponse {

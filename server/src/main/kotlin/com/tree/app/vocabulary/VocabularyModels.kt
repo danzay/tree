@@ -5,6 +5,12 @@ data class TranslationResponse(
     val text: String,
 )
 
+data class CatalogueLevelResponse(
+    val source: String,
+    val sourceName: String,
+    val level: String,
+)
+
 data class VocabularySenseResponse(
     val id: String,
     val word: String,
@@ -16,6 +22,7 @@ data class VocabularySenseResponse(
     val partsOfSpeech: List<String>,
     val translations: List<TranslationResponse>,
     val collocations: List<String>,
+    val catalogueLevels: List<CatalogueLevelResponse>,
 )
 
 data class WordsResponse(
@@ -47,7 +54,6 @@ data class WordSearchQuery(
     val status: String?,
     val partOfSpeech: String?,
     val language: String,
-    val includeNeedsReview: Boolean,
     val limit: Int,
     val offset: Int,
 )

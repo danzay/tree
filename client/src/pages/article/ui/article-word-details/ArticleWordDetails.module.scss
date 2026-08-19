@@ -1,5 +1,7 @@
 @use '@/shared/styles/mixins';
 
+@include mixins.level-background-classes;
+
 .header {
   display: flex;
   align-items: flex-start;
@@ -27,26 +29,6 @@
   color: var(--ink);
   font-size: 13px;
   font-weight: 750;
-}
-
-.a1 {
-  background: var(--level-a1);
-}
-
-.a2 {
-  background: var(--level-a2);
-}
-
-.b1 {
-  background: var(--level-b1);
-}
-
-.b2 {
-  background: var(--level-b2);
-}
-
-.c1 {
-  background: var(--level-c1);
 }
 
 .tags {

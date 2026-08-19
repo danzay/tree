@@ -1,3 +1,7 @@
+@use '@/shared/styles/mixins';
+
+@include mixins.level-background-classes;
+
 .highlight {
   padding: 2px 3px;
   border-radius: 5px;
@@ -13,24 +17,4 @@
 
 .selected {
   box-shadow: 0 0 0 2px var(--moss);
-}
-
-.a1 {
-  background: var(--level-a1);
-}
-
-.a2 {
-  background: var(--level-a2);
-}
-
-.b1 {
-  background: var(--level-b1);
-}
-
-.b2 {
-  background: var(--level-b2);
-}
-
-.c1 {
-  background: var(--level-c1);
 }

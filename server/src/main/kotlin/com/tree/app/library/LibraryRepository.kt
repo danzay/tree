@@ -82,9 +82,8 @@ class LibraryRepository(
         FROM senses s
         JOIN headwords h ON h.id = s.headword_id
         JOIN sense_progress sp ON sp.sense_id = s.id
-        WHERE s.cefr_level IN ('A1', 'A2', 'B1', 'B2', 'C1')
+        WHERE s.cefr_level IN ('A1', 'A2', 'B1', 'B2', 'C1', 'C2')
           AND sp.status IN ('new', 'learning')
-          AND s.review_status <> 'needs_review'
         ORDER BY h.normalized_word, s.sense_order, s.id
         """.trimIndent(),
         emptyMap<String, Any>(),

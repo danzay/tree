@@ -29,7 +29,6 @@ class VocabularyController(
         @RequestParam(required = false) status: String?,
         @RequestParam(required = false) partOfSpeech: String?,
         @RequestParam(defaultValue = "ru") language: String,
-        @RequestParam(defaultValue = "false") includeNeedsReview: Boolean,
         @RequestParam(defaultValue = "30") limit: Int,
         @RequestParam(defaultValue = "0") offset: Int,
     ): WordsResponse {
@@ -51,7 +50,6 @@ class VocabularyController(
                 status = status,
                 partOfSpeech = normalizedPartOfSpeech,
                 language = normalizedLanguage,
-                includeNeedsReview = includeNeedsReview,
                 limit = limit,
                 offset = offset,
             ),

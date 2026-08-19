@@ -175,8 +175,16 @@ rules belong in services/domain types, and SQL belongs in repository classes.
 ## Domain modeling principles
 
 - A headword represents the written spelling.
-- A word sense represents a specific meaning and may have its own CEFR level,
-  definition, transcription, and learning progress.
+- A word sense represents a specific meaning and may have its own effective CEFR
+  level, definition, transcription, and learning progress.
+- Headwords and senses form one shared vocabulary catalogue. Oxford, Cambridge
+  EVP, ESL Lounge, manual additions, and future sources are provenance records,
+  not separate word databases.
+- CEFR is a classification system rather than a vocabulary source. Every imported
+  classification records the organization or list that assigned it.
+- Conflicting source levels are retained side by side. Oxford is the preferred
+  effective level when available, followed by an authorized Cambridge EVP record,
+  ESL Lounge, and then a manual classification.
 - Separate source entries and meanings must not be merged only because they share
   the same spelling.
 - A word sense can have multiple parts of speech when the source entry requires it.

@@ -76,10 +76,6 @@ class VocabularyRepository(
         val filters = mutableListOf<String>()
         val ordering = mutableListOf<String>()
 
-        if (!query.includeNeedsReview) {
-            filters += "s.review_status <> 'needs_review'"
-        }
-
         query.search?.takeIf { it.isNotBlank() }?.let { search ->
             parameters.addValue("search", normalizeHeadword(search))
             filters += "strpos(h.normalized_word, :search) > 0"
@@ -191,6 +187,27 @@ class VocabularyRepository(
         ) { resultSet, _ ->
             resultSet.getLong("sense_id") to resultSet.getString("text")
         }.groupBy({ it.first }, { it.second })
+        val catalogueLevels = jdbc.query(
+            """
+            SELECT mapping.sense_id,
+                   entry.source_code,
+                   source.display_name,
+                   entry.cefr_level
+            FROM catalogue_entry_senses mapping
+            JOIN catalogue_entries entry ON entry.id = mapping.catalogue_entry_id
+            JOIN catalogue_sources source ON source.code = entry.source_code
+            WHERE mapping.sense_id IN (:ids)
+              AND entry.cefr_level IS NOT NULL
+            ORDER BY mapping.sense_id, source.display_priority, entry.cefr_level
+            """.trimIndent(),
+            mapOf("ids" to ids),
+        ) { resultSet, _ ->
+            resultSet.getLong("sense_id") to CatalogueLevelResponse(
+                source = resultSet.getString("source_code"),
+                sourceName = resultSet.getString("display_name"),
+                level = resultSet.getString("cefr_level"),
+            )
+        }.groupBy({ it.first }, { it.second })
 
         return rows.map { row ->
             VocabularySenseResponse(
@@ -204,6 +221,7 @@ class VocabularyRepository(
                 partsOfSpeech = partsOfSpeech[row.id].orEmpty(),
                 translations = translations[row.id].orEmpty(),
                 collocations = collocations[row.id].orEmpty(),
+                catalogueLevels = catalogueLevels[row.id].orEmpty().distinct(),
             )
         }
     }

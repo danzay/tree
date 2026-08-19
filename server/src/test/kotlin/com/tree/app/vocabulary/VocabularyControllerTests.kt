@@ -16,7 +16,6 @@ class VocabularyControllerTests {
             status = "learning",
             partOfSpeech = "noun",
             language = "ru",
-            includeNeedsReview = false,
             limit = 20,
             offset = 0,
         )
@@ -35,7 +34,6 @@ class VocabularyControllerTests {
                 status = "unknown",
                 partOfSpeech = null,
                 language = "ru",
-                includeNeedsReview = false,
                 limit = 30,
                 offset = 0,
             )

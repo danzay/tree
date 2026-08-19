@@ -25,7 +25,7 @@ export interface ArticleBlock {
   highlights: ArticleHighlight[]
 }
 
-export type ArticleHighlightLevel = 'A1' | 'A2' | 'B1' | 'B2' | 'C1'
+export type ArticleHighlightLevel = 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2'
 
 export interface ArticleHighlight {
   start: number

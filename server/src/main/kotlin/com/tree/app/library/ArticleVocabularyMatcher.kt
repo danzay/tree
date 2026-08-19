@@ -182,7 +182,7 @@ class ArticleVocabularyMatcher(
         const val LEARNING_STATUS = "learning"
         val WORD_REGEX = Regex("[\\p{L}]+(?:['’][\\p{L}]+)?")
         val PHRASE_SEPARATOR_REGEX = Regex("[\\s-]+")
-        val CEFR_LEVELS = listOf("A1", "A2", "B1", "B2", "C1")
+        val CEFR_LEVELS = listOf("A1", "A2", "B1", "B2", "C1", "C2")
         val VERB_PREFIXES = listOf("(to) ", "to ")
         val IRREGULAR_LEMMAS = mapOf(
             "am" to "be",
