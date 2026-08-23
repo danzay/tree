@@ -1,0 +1,59 @@
+.container {
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+  margin-top: 20px;
+}
+
+.partOfSpeech {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 999px;
+  margin: 0;
+  background: var(--sage-soft);
+  color: var(--moss-dark);
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.tabList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+.tab {
+  padding: 7px 11px;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 550;
+  outline: none;
+
+  &[data-selected] {
+    background: var(--sage-soft);
+    color: var(--moss-dark);
+  }
+
+  &[data-hovered] {
+    color: var(--moss-dark);
+  }
+
+  &[data-focus-visible] {
+    outline: 3px solid var(--focus);
+    outline-offset: 2px;
+  }
+}
+
+.tabPanel {
+  outline: none;
+
+  &[data-focus-visible] {
+    border-radius: 8px;
+    outline: 3px solid var(--focus);
+    outline-offset: 3px;
+  }
+}

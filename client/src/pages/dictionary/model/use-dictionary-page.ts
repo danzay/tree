@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { getWordSenses, type WordsResponse } from '@/entities/word-sense'
+import { getWordSenses, type WordsResponse } from '@/entities/word'
 import { getRequestErrorMessage, isRequestCanceled } from '@/shared/api/api-client'
 
 export function useDictionaryPage() {

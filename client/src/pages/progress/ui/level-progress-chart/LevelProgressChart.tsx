@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import type { LevelProgress } from '@/entities/word-sense'
+import type { LevelProgress } from '@/entities/word'
 import styles from './LevelProgressChart.module.scss'
 
 interface LevelProgressChartProps {

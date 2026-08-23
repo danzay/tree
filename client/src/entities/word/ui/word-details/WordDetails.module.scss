@@ -1,0 +1,42 @@
+@use '@/shared/styles/mixins';
+
+@include mixins.level-background-classes;
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding-right: 34px;
+}
+
+.title {
+  margin: 0;
+  color: var(--moss-dark);
+  font-size: 36px;
+  @include mixins.serif-heading;
+}
+
+.level {
+  flex: 0 0 auto;
+  padding: 5px 9px;
+  border-radius: 7px;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 750;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.tag {
+  padding: 4px 9px;
+  border-radius: 999px;
+  background: var(--sage-soft);
+  color: var(--moss-dark);
+  font-size: 12px;
+}

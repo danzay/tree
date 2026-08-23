@@ -1,12 +1,16 @@
+import { ArticleCover } from '@/entities/article'
 import type { LibraryItem } from '@/entities/library-item'
-import type { VocabularySense } from '@/entities/word-sense'
-import { ArticleCover } from '../article-cover/ArticleCover'
-import { ArticleSelectionDetails } from '../article-selection-details/ArticleSelectionDetails'
-import { ArticleWordPanel } from '../article-word-panel/ArticleWordPanel'
-import { ArticleWordPanelContent } from '../article-word-panel-content/ArticleWordPanelContent'
+import {
+  SelectedWordDetails,
+  WordPanel,
+  WordPanelContent,
+  type VocabularySense,
+  type WordInfo,
+} from '@/entities/word'
 
 interface ArticleSidebarProps {
   item: LibraryItem
+  wordInfo: WordInfo
   selectedSenseId: number | null
   selectedText: string | null
   wordError: string | null
@@ -17,6 +21,7 @@ interface ArticleSidebarProps {
 
 export function ArticleSidebar({
   item,
+  wordInfo,
   selectedSenseId,
   selectedText,
   wordError,
@@ -26,17 +31,22 @@ export function ArticleSidebar({
 }: ArticleSidebarProps) {
   if (selectedText) {
     return (
-      <ArticleWordPanel onClose={onWordClose}>
-        <ArticleSelectionDetails text={selectedText} />
-      </ArticleWordPanel>
+      <WordPanel sticky onClose={onWordClose}>
+        <SelectedWordDetails wordInfo={wordInfo} text={selectedText} />
+      </WordPanel>
     )
   }
 
   if (selectedSenseId !== null) {
     return (
-      <ArticleWordPanel onClose={onWordClose}>
-        <ArticleWordPanelContent error={wordError} loading={wordLoading} sense={wordSense} />
-      </ArticleWordPanel>
+      <WordPanel sticky onClose={onWordClose}>
+        <WordPanelContent
+          error={wordError}
+          loading={wordLoading}
+          wordInfo={wordInfo}
+          sense={wordSense}
+        />
+      </WordPanel>
     )
   }
 

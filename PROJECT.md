@@ -45,8 +45,10 @@ app -> pages -> features -> entities -> shared
 
 Slices expose a small public API. Same-layer slices must not import each other's
 internals. Page-only code stays in its page slice until reuse or business value
-justifies promotion. `word-sense` is the vocabulary entity because identical
-spellings can represent different meanings, parts of speech, and CEFR levels.
+justifies promotion. The `word` entity owns vocabulary senses, lookup services,
+and reusable word-information UI because identical spellings can represent
+different meanings, parts of speech, and CEFR levels. The `article` entity owns
+article content, highlights, metadata presentation, and article-detail reads.
 
 Selected frontend foundations:
 
@@ -74,6 +76,16 @@ user data or synchronized storage.
 Axios is accessed through `shared/api/api-client.ts`; pages must not create their
 own Axios instances. React Aria Components should be wrapped in `shared/ui` when a
 Tree-specific reusable component API or styling convention is needed.
+
+Component files contain one React component each. Additional components must be
+moved into separate files. Non-trivial calculation and transformation helpers
+belong in a colocated `utils/` folder, with one exported utility per file and a
+filename that exactly matches the utility name.
+
+Do not place SVG markup directly inside another React component. Keep static SVGs
+in standalone `.svg` asset files, and keep SVGs that need React behavior, props, or
+`currentColor` styling in a dedicated React component file. Each React SVG icon or
+illustration must have its own component file.
 
 ## Permanent backend decision
 
@@ -230,6 +242,10 @@ Expected API areas:
 All request input must be validated. SQL must remain parameterized. Mutation
 endpoints should continue using transactions and optimistic concurrency where an
 assistant or multiple clients could update the same record.
+
+DictionaryAPI.dev definitions are read directly by the browser because that API
+does not require credentials. Yandex Dictionary requests pass through Kotlin so
+`YANDEX_KEY` is never exposed to the React client.
 
 OpenAPI should be the contract between Kotlin and React. TypeScript request and
 response types should be generated from that contract instead of being manually

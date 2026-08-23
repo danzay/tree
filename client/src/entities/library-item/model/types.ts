@@ -17,26 +17,3 @@ export interface LibraryItem {
   lastOpenedAt: string | null
   updatedAt: string
 }
-
-export interface ArticleBlock {
-  position: number
-  type: 'heading' | 'paragraph'
-  text: string
-  highlights: ArticleHighlight[]
-}
-
-export type ArticleHighlightLevel = 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2'
-
-export interface ArticleHighlight {
-  start: number
-  end: number
-  senseId: number
-  word: string
-  level: ArticleHighlightLevel
-  status: 'new' | 'learning'
-}
-
-export interface LibraryItemDetail {
-  item: LibraryItem
-  blocks: ArticleBlock[]
-}

@@ -1,0 +1,51 @@
+.group {
+  ol {
+    display: grid;
+    gap: 12px;
+    padding-left: 20px;
+    margin: 0;
+  }
+
+  li,
+  p {
+    margin: 0;
+  }
+
+  blockquote {
+    padding-left: 10px;
+    border-left: 2px solid var(--sage);
+    margin: 5px 0 0;
+    color: var(--muted);
+    font-style: italic;
+  }
+}
+
+.related {
+  margin-top: 5px !important;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.toggle {
+  display: block;
+  padding: 3px 0;
+  border: 0;
+  margin: 14px 0 0 auto;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  text-decoration: underline;
+  text-decoration-color: var(--sage);
+  text-underline-offset: 3px;
+
+  &[data-hovered] {
+    color: var(--moss-dark);
+  }
+
+  &[data-focus-visible] {
+    outline: 3px solid var(--focus);
+    outline-offset: 2px;
+  }
+}

@@ -1,7 +1,8 @@
 import { useTranslation } from 'react-i18next'
 import { Input, Label, SearchField } from 'react-aria-components/SearchField'
+import { VOCABULARY_LEVELS } from '@/shared/model/vocabulary-level'
 import { Select } from '@/shared/ui'
-import { LEARNING_STATUSES, VOCABULARY_LEVELS } from '../../model/options'
+import { LEARNING_STATUSES } from '../../model/options'
 import { ALL_FILTER_VALUE, STATUS_LABEL_SEPARATOR, STATUS_SEPARATOR } from './consts'
 import styles from './DictionaryFilters.module.scss'
 

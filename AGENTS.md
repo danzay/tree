@@ -5,7 +5,9 @@ These instructions apply to the entire repository. The React client lives in `cl
 ## Components and architecture
 
 - Keep components focused. Extract new components when markup or isolated behavior makes a component difficult to scan.
+- Keep one React component per component file. Move every additional component to its own file.
 - Keep a component's props type in the same file as the component unless several components genuinely share that type.
+- Move non-trivial calculation and transformation helpers into a colocated `utils/` folder. Keep one exported utility per file and name the file exactly after the utility.
 - Define event handlers as named variables above JSX. Do not place non-trivial inline handlers in JSX.
 - Before creating a UI primitive, check React Aria Components and the existing `src/shared/ui` components. Prefer an existing accessible primitive.
 - Use React Aria Components directly when they already match the required control. Add a shared wrapper only when it provides meaningful repeated composition, behavior, or Tree-specific styling—not merely prop forwarding.

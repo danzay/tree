@@ -1,0 +1,33 @@
+.section {
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+  margin-top: 20px;
+
+  > h3 {
+    margin: 0 0 10px;
+    color: var(--moss-dark);
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 17px;
+    font-weight: 600;
+  }
+
+  > p {
+    margin: 0;
+    color: var(--ink);
+    font-size: 14px;
+    line-height: 1.55;
+  }
+}
+
+.results {
+  display: grid;
+  gap: 12px;
+}
+
+.state {
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+  margin: 20px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+}

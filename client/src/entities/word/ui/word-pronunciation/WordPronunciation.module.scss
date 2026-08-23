@@ -1,0 +1,58 @@
+.pronunciation {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 30px;
+  margin-top: 5px;
+
+  p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 14px;
+  }
+
+  audio {
+    display: none;
+  }
+}
+
+.play {
+  display: grid;
+  width: 28px;
+  height: 28px;
+  flex: 0 0 auto;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--moss);
+  cursor: pointer;
+  place-items: center;
+
+  svg {
+    width: 18px;
+    height: 18px;
+    overflow: visible;
+    fill: currentColor;
+
+    path:last-child {
+      fill: none;
+      stroke: currentColor;
+      stroke-linecap: round;
+      stroke-width: 1.7;
+    }
+  }
+
+  &[data-hovered] {
+    background: var(--sage-soft);
+  }
+
+  &[data-pressed] {
+    background: var(--sage);
+  }
+
+  &[data-focus-visible] {
+    outline: 3px solid var(--focus);
+    outline-offset: 2px;
+  }
+}

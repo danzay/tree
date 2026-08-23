@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { WordSenseCard, type WordsResponse } from '@/entities/word-sense'
+import { WordSenseCard, type WordsResponse } from '@/entities/word'
 import styles from './DictionaryResults.module.scss'
 
 interface DictionaryResultsProps {

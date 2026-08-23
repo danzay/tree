@@ -90,10 +90,15 @@ from an authorized export or licensed integration.
 - `GET /api/stats` returns vocabulary totals by level and status.
 - `GET /api/words` searches and filters word senses.
 - `GET /api/words/{id}` returns one word sense.
+- `GET /api/translations?text=...` securely retrieves English-Russian dictionary entries from Yandex.
 - `GET /api/library-items` returns the saved Library catalogue.
 - `GET /api/library-items/{id}` returns one item and its ordered article blocks.
 
 Search parameters are validated, and database values are passed through named SQL parameters. Separate senses and duplicate spellings remain separate records. Library metadata is stored separately from article blocks so future stories, videos, podcasts, and notes can share the same catalogue.
+
+Article word definitions are loaded by the React client from DictionaryAPI.dev.
+Translations are requested through the Kotlin endpoint so `YANDEX_KEY` remains
+server-side and is never included in the browser bundle or response payload.
 
 ## Data model and migrations
 

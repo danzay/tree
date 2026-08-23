@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { getVocabularyStats, type StatsResponse } from '@/entities/word-sense'
+import { getVocabularyStats, type StatsResponse } from '@/entities/word'
 import { getRequestErrorMessage, isRequestCanceled } from '@/shared/api/api-client'
 
 export function useProgressPage() {

@@ -1,9 +1,8 @@
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
 import { APP_ROUTE_PATHS } from '@/app/route-consts'
+import { ArticleContent, ArticleHeader } from '@/entities/article'
 import { useArticlePage } from '../../model/use-article-page'
-import { ArticleContent } from '../article-content/ArticleContent'
-import { ArticleHeader } from '../article-header/ArticleHeader'
 import { ArticleSidebar } from '../article-sidebar/ArticleSidebar'
 import styles from './ArticlePage.module.scss'
 
@@ -48,6 +47,7 @@ export function ArticlePage() {
         </article>
         <ArticleSidebar
           item={page.article.item}
+          wordInfo={page.wordInfo}
           selectedSenseId={page.selectedSenseId}
           selectedText={page.selectedText}
           wordError={page.selectedWord.error}

@@ -94,7 +94,17 @@ export const EN_TRANSLATIONS = {
       title: 'Vocabulary levels',
       description: 'New and learning words are coloured by CEFR level.',
     },
-    wordPanel: {
+    actions: {
+      backToLibrary: 'Back to library',
+    },
+    errors: {
+      title: 'Article unavailable',
+      loading: 'Could not load the article',
+      notFound: 'This article could not be found.',
+    },
+  },
+  word: {
+    panel: {
       label: 'Word information',
       close: 'Close word information',
       loading: 'Loading word information…',
@@ -106,18 +116,26 @@ export const EN_TRANSLATIONS = {
         loading: 'Could not load word information',
       },
     },
-    selectionPanel: {
+    selectedWord: {
       eyebrow: 'Selected text',
       title: '“{{text}}”',
-      message: 'Translation for this word or phrase will be added soon.',
     },
-    actions: {
-      backToLibrary: 'Back to library',
-    },
-    errors: {
-      title: 'Article unavailable',
-      loading: 'Could not load the article',
-      notFound: 'This article could not be found.',
+    lexical: {
+      loadingDefinition: 'Looking up definitions…',
+      loadingTranslation: 'Looking up translations…',
+      noDefinition: 'No English definition was found.',
+      noTranslation: 'No Russian translation was found.',
+      synonyms: 'Synonyms',
+      antonyms: 'Antonyms',
+      meanings: 'English meanings',
+      partOfSpeechTabs: 'Word information by part of speech',
+      playPronunciation: 'Play pronunciation',
+      showMoreDefinitions: 'Show {{count}} more',
+      showFewerDefinitions: 'Show fewer',
+      errors: {
+        definition: 'Could not load definitions',
+        translation: 'Could not load translations',
+      },
     },
   },
   dictionary: {

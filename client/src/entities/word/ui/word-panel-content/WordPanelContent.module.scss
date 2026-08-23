@@ -1,0 +1,20 @@
+.state {
+  display: grid;
+  min-height: 240px;
+  align-content: center;
+  color: var(--muted);
+  line-height: 1.5;
+  text-align: center;
+}
+
+.loading {
+  margin: 0;
+}
+
+.title {
+  color: var(--ink);
+}
+
+.message {
+  margin: 8px 0 0;
+}
