@@ -16,6 +16,7 @@ data class LibraryItemSummaryResponse(
     val estimatedReadMinutes: Int,
     val vocabularyCount: Int,
     val readingStatus: String,
+    val youtubeVideoId: String?,
     val lastOpenedAt: String?,
     val updatedAt: String,
 )

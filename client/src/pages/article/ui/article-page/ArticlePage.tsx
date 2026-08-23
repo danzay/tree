@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
 import { APP_ROUTE_PATHS } from '@/app/route-consts'
-import { ArticleContent, ArticleHeader } from '@/entities/article'
+import { ArticleContent, ArticleHeader, ArticleVideo } from '@/entities/article'
 import { useArticlePage } from '../../model/use-article-page'
 import { ArticleSidebar } from '../article-sidebar/ArticleSidebar'
 import styles from './ArticlePage.module.scss'
@@ -38,6 +38,10 @@ export function ArticlePage() {
       <div className={styles.layout}>
         <article className={styles.paper}>
           <ArticleHeader item={page.article.item} />
+          <ArticleVideo
+            articleTitle={page.article.item.title}
+            videoId={page.article.item.youtubeVideoId}
+          />
           <ArticleContent
             blocks={page.article.blocks}
             selectedSenseId={page.selectedSenseId}

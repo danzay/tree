@@ -90,6 +90,9 @@ export const EN_TRANSLATIONS = {
     about: {
       topic: 'Topic',
     },
+    video: {
+      title: 'Video for {{title}}',
+    },
     vocabulary: {
       title: 'Vocabulary levels',
       description: 'New and learning words are coloured by CEFR level.',

@@ -14,6 +14,7 @@ export interface LibraryItem {
   estimatedReadMinutes: number
   vocabularyCount: number
   readingStatus: LibraryItemReadingStatus
+  youtubeVideoId: string | null
   lastOpenedAt: string | null
   updatedAt: string
 }

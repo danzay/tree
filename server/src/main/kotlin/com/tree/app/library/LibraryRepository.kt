@@ -116,6 +116,7 @@ class LibraryRepository(
                 estimatedReadMinutes = resultSet.getInt("estimated_read_minutes"),
                 vocabularyCount = resultSet.getInt("vocabulary_count"),
                 readingStatus = resultSet.getString("reading_status"),
+                youtubeVideoId = resultSet.getString("youtube_video_id"),
                 lastOpenedAt = resultSet.getObject("last_opened_at", OffsetDateTime::class.java)
                     ?.toInstant()
                     ?.toString(),
@@ -135,6 +136,7 @@ class LibraryRepository(
                    estimated_read_minutes,
                    vocabulary_count,
                    reading_status,
+                   youtube_video_id,
                    last_opened_at,
                    updated_at
             FROM library_items
