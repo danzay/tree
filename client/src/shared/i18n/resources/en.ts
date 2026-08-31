@@ -163,6 +163,12 @@ export const EN_TRANSLATIONS = {
       loading: 'Loading…',
       empty: 'No matching vocabulary found.',
     },
+    pagination: {
+      label: 'Dictionary pages',
+      previous: 'Previous',
+      next: 'Next',
+      position: 'Page {{page}} of {{totalPages}}',
+    },
     card: {
       noTranscription: 'No transcription',
       translationReview: 'Translation needs review',

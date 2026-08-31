@@ -21,6 +21,8 @@ export interface VocabularySense {
 export interface WordsResponse {
   items: VocabularySense[]
   total: number
+  limit: number
+  offset: number
 }
 
 export interface StatsResponse {
@@ -45,4 +47,5 @@ export interface WordSenseQuery {
   status?: string
   language?: string
   limit?: number
+  offset?: number
 }

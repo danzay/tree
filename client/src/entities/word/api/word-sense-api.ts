@@ -15,6 +15,7 @@ export async function getWordSenses(query: WordSenseQuery, signal?: AbortSignal)
       status: query.status || undefined,
       language: query.language ?? 'ru',
       limit: query.limit ?? 30,
+      offset: query.offset ?? 0,
     },
   })
 
