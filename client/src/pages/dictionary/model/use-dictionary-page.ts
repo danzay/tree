@@ -1,8 +1,8 @@
-import { useEffect, useMemo, useState } from 'react'
-import { useTranslation } from 'react-i18next'
+import { useEffect, useMemo } from 'react'
 import { useSearchParams } from 'react-router'
-import { getWordSenses, type WordsResponse } from '@/entities/word'
-import { getRequestErrorMessage, isRequestCanceled } from '@/shared/api/api-client'
+import { useWordSensesQuery, type WordsResponse } from '@/entities/word'
+import { useQueryErrorMessage } from '@/shared/api/useQueryErrorMessage'
+import { useDebouncedValue } from '@/shared/lib/hooks/useDebouncedValue'
 import {
   DICTIONARY_PAGE_SIZE,
   DICTIONARY_REQUEST_DELAY_MS,
@@ -12,68 +12,32 @@ import { getDictionaryPreferences } from './utils/getDictionaryPreferences'
 import { getDictionarySearchParams } from './utils/getDictionarySearchParams'
 
 export function useDictionaryPage() {
-  const { t } = useTranslation()
   const [searchParams, setSearchParams] = useSearchParams()
   const preferences = useMemo(() => getDictionaryPreferences(searchParams), [searchParams])
-  const [words, setWords] = useState<WordsResponse>({
+  const debouncedSearch = useDebouncedValue(preferences.search, DICTIONARY_REQUEST_DELAY_MS)
+  const wordsQuery = useWordSensesQuery({
+    search: debouncedSearch,
+    level: preferences.level,
+    status: preferences.status,
+    limit: DICTIONARY_PAGE_SIZE,
+    offset: (preferences.page - 1) * DICTIONARY_PAGE_SIZE,
+  })
+  const words: WordsResponse = wordsQuery.data ?? {
     items: [],
     total: 0,
     limit: DICTIONARY_PAGE_SIZE,
     offset: 0,
-  })
-  const [error, setError] = useState<string | null>(null)
-  const [loading, setLoading] = useState(true)
+  }
   const { level, page, search, status } = preferences
   const totalPages = Math.max(1, Math.ceil(words.total / DICTIONARY_PAGE_SIZE))
+  const error = useQueryErrorMessage(wordsQuery, 'dictionary.errors.vocabulary')
 
   useEffect(() => {
-    const controller = new AbortController()
-    const delay = window.setTimeout(() => {
-      setLoading(true)
-      setError(null)
-
-      getWordSenses(
-        {
-          search,
-          level,
-          status,
-          limit: DICTIONARY_PAGE_SIZE,
-          offset: (page - 1) * DICTIONARY_PAGE_SIZE,
-        },
-        controller.signal,
-      )
-        .then((response) => {
-          const responseTotalPages = Math.max(1, Math.ceil(response.total / DICTIONARY_PAGE_SIZE))
-
-          setWords(response)
-          if (page > responseTotalPages) {
-            const nextPreferences = { ...preferences, page: responseTotalPages }
-            setSearchParams(getDictionarySearchParams(nextPreferences), { replace: true })
-          }
-        })
-        .catch((caught: unknown) => {
-          if (!isRequestCanceled(caught)) {
-            setError(
-              getRequestErrorMessage(
-                caught,
-                t('dictionary.errors.vocabulary'),
-                t('dictionary.errors.connection'),
-              ),
-            )
-          }
-        })
-        .finally(() => {
-          if (!controller.signal.aborted) {
-            setLoading(false)
-          }
-        })
-    }, DICTIONARY_REQUEST_DELAY_MS)
-
-    return () => {
-      window.clearTimeout(delay)
-      controller.abort()
+    if (wordsQuery.isSuccess && page > totalPages) {
+      const nextPreferences = { ...preferences, page: totalPages }
+      setSearchParams(getDictionarySearchParams(nextPreferences), { replace: true })
     }
-  }, [level, page, preferences, search, setSearchParams, status, t])
+  }, [page, preferences, setSearchParams, totalPages, wordsQuery.isSuccess])
 
   const updatePreferences = (nextPreferences: typeof preferences) => {
     setSearchParams(getDictionarySearchParams(nextPreferences), { replace: true })
@@ -111,7 +75,7 @@ export function useDictionaryPage() {
   return {
     error,
     level,
-    loading,
+    loading: wordsQuery.isFetching,
     page,
     search,
     setLevel,

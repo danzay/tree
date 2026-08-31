@@ -1,6 +1,9 @@
 export const EN_TRANSLATIONS = {
   common: {
     appName: 'tree',
+    errors: {
+      connection: 'Could not connect to the server',
+    },
   },
   navigation: {
     treeHome: 'Tree home',
@@ -186,7 +189,6 @@ export const EN_TRANSLATIONS = {
     },
     errors: {
       vocabulary: 'Could not load vocabulary',
-      connection: 'Could not connect to the server',
     },
   },
   progress: {

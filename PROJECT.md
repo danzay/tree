@@ -56,14 +56,17 @@ Selected frontend foundations:
 | ------------- | --------------------------------------------------------------------- |
 | Routing       | React Router with hash routing for the current Vite deployment        |
 | Client state  | Zustand, colocated with the owning page or feature                    |
+| Server state  | TanStack Query with entity-owned query hooks and keys                 |
 | HTTP client   | A shared Axios instance; requests live in entity/feature API segments |
 | UI primitives | React Aria Components, styled with vanilla SCSS                       |
 | Styling       | Global tokens plus colocated SCSS; no Tailwind or CSS-in-JS           |
 
 Zustand is not a replacement for all React state. Temporary component state stays
 local, URL-shareable filters should move to search parameters, and PostgreSQL/API
-data must not be duplicated into a global client store. The Library grid/list
-preference is the first persisted Zustand state.
+data must not be duplicated into a Zustand or page-local store. TanStack Query owns
+remote request state, caching, cancellation, and freshness. Entity query hooks own
+their query keys and API calls; page hooks compose those queries with page-specific
+state. The Library grid/list preference is the first persisted Zustand state.
 
 Until the Kotlin library module is implemented, library item records are stored in
 the browser under the versioned `tree.library-items.v1` local-storage key. Stored
@@ -250,6 +253,33 @@ does not require credentials. Yandex Dictionary requests pass through Kotlin so
 OpenAPI should be the contract between Kotlin and React. TypeScript request and
 response types should be generated from that contract instead of being manually
 duplicated.
+
+## Media storage and caching
+
+Image and audio files must be treated separately from their application metadata:
+
+- actual media files should live in S3-compatible object storage and be delivered
+  through a CDN rather than stored as PostgreSQL binary or base64 data;
+- PostgreSQL should store the media record, object key, owner, media and MIME type,
+  dimensions or duration, alternative text, attribution, version, and timestamps;
+- Kotlin should authorize private media access and return public or time-limited
+  signed URLs as part of API response DTOs;
+- TanStack Query should cache media metadata and URLs, not large `Blob` objects or
+  the image and audio bytes themselves;
+- the browser HTTP cache and CDN should cache the downloaded bytes; app-owned static
+  assets can continue to use Vite's asset pipeline;
+- immutable, versioned object keys or URLs should be used when media is replaced so
+  browsers do not display an outdated cached file;
+- audio delivery should support range requests, and clients should normally use
+  `preload="metadata"` rather than eagerly downloading every recording;
+- uploads should use multipart API requests or signed direct uploads, followed by a
+  TanStack Query mutation that updates or invalidates the associated metadata query;
+- future offline media support should use a service worker and Cache Storage rather
+  than extending the in-memory TanStack Query cache.
+
+Dictionary and translation responses may contain media URLs and remain valid query
+data. Rendering an `<img>` or `<audio>` element lets the browser fetch and cache the
+underlying file independently.
 
 ## Progress tree requirements
 

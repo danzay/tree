@@ -1,4 +1,5 @@
 export { getArticle } from './api/article-api'
+export { useArticleQuery } from './model/useArticleQuery'
 export { ArticleContent } from './ui/article-content/ArticleContent'
 export { ArticleCover } from './ui/article-cover/ArticleCover'
 export { ArticleHeader } from './ui/article-header/ArticleHeader'

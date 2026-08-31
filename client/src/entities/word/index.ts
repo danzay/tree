@@ -2,6 +2,8 @@ export { getVocabularyStats, getWordSense, getWordSenses } from './api/word-sens
 export { getDictionaryEntries, getTranslations } from './api/lexical-api'
 export { useWordInfo } from './model/useWordInfo'
 export { useWordSense } from './model/useWordSense'
+export { useVocabularyStatsQuery } from './model/useVocabularyStatsQuery'
+export { useWordSensesQuery } from './model/useWordSensesQuery'
 export { SelectedWordDetails } from './ui/selected-word-details/SelectedWordDetails'
 export { WordPanel } from './ui/word-panel/WordPanel'
 export { WordPanelContent } from './ui/word-panel-content/WordPanelContent'

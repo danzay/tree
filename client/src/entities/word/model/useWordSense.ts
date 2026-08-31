@@ -1,56 +1,18 @@
-import { useEffect, useState } from 'react'
-import { useTranslation } from 'react-i18next'
-import { getRequestErrorMessage, isRequestCanceled } from '@/shared/api/api-client'
+import { skipToken, useQuery } from '@tanstack/react-query'
+import { useQueryErrorMessage } from '@/shared/api/useQueryErrorMessage'
 import { getWordSense } from '../api/word-sense-api'
-import type { VocabularySense } from './types'
-
-interface WordSenseResult {
-  error: string | null
-  sense: VocabularySense | null
-  senseId: number | null
-}
+import { WORD_QUERY_KEYS } from './query-keys'
 
 export function useWordSense(senseId: number | null) {
-  const { t } = useTranslation()
-  const [result, setResult] = useState<WordSenseResult>({
-    error: null,
-    sense: null,
-    senseId: null,
+  const senseQuery = useQuery({
+    queryKey: WORD_QUERY_KEYS.sense(senseId),
+    queryFn: senseId === null ? skipToken : ({ signal }) => getWordSense(senseId, signal),
   })
-
-  useEffect(() => {
-    const controller = new AbortController()
-
-    if (senseId === null) {
-      return () => controller.abort()
-    }
-
-    getWordSense(senseId, controller.signal)
-      .then((sense) => {
-        setResult({ error: null, sense, senseId })
-      })
-      .catch((caught: unknown) => {
-        if (!isRequestCanceled(caught)) {
-          setResult({
-            error: getRequestErrorMessage(
-              caught,
-              t('word.panel.errors.loading'),
-              t('dictionary.errors.connection'),
-            ),
-            sense: null,
-            senseId,
-          })
-        }
-      })
-
-    return () => controller.abort()
-  }, [senseId, t])
-
-  const hasCurrentResult = result.senseId === senseId
+  const error = useQueryErrorMessage(senseQuery, 'word.panel.errors.loading')
 
   return {
-    error: hasCurrentResult ? result.error : null,
-    loading: senseId !== null && !hasCurrentResult,
-    sense: hasCurrentResult ? result.sense : null,
+    error,
+    loading: senseQuery.isLoading,
+    sense: senseQuery.data ?? null,
   }
 }
