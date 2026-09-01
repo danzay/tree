@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { LEVEL_CLASS_NAMES, type VocabularyLevel } from '@/shared/model/vocabulary-level'
+import { LEVEL_CLASS_NAMES } from '@/shared/model/vocabulary-level'
 import type { VocabularySense } from '../../model/types'
 import type { WordInfo } from '../../model/useWordInfo'
 import { WordLexicalResults } from '../word-lexical-results/WordLexicalResults'
@@ -16,7 +16,7 @@ export function WordDetails({ wordInfo, sense }: WordDetailsProps) {
   const { t } = useTranslation()
   const translations = sense.translations.map((translation) => translation.text)
   const statusLabel = t(`dictionary.status.${sense.status}`, { defaultValue: sense.status })
-  const levelClassName = LEVEL_CLASS_NAMES[sense.level as VocabularyLevel] ?? LEVEL_CLASS_NAMES.C1
+  const levelClassName = LEVEL_CLASS_NAMES[sense.level]
 
   return (
     <div className={styles.details}>

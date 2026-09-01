@@ -1,5 +1,9 @@
 package com.tree.app.auth
 
+import com.tree.api.model.AuthConfigResponse
+import com.tree.api.model.InvitationRequest
+import com.tree.api.model.InvitationResponse
+import com.tree.api.model.RegistrationRequest
 import org.springframework.dao.DuplicateKeyException
 import org.springframework.http.HttpStatus
 import org.springframework.security.crypto.password.PasswordEncoder
@@ -11,6 +15,7 @@ import java.security.SecureRandom
 import java.time.Clock
 import java.time.Duration
 import java.time.Instant
+import java.time.ZoneOffset
 import java.util.Base64
 import java.util.Locale
 import java.util.UUID
@@ -140,7 +145,7 @@ class AuthService(
         return InvitationResponse(
             email = request.email.trim(),
             token = token,
-            expiresAt = expiresAt,
+            expiresAt = expiresAt.atOffset(ZoneOffset.UTC),
         )
     }
 

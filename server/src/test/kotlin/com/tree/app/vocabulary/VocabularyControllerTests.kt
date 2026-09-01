@@ -1,5 +1,8 @@
 package com.tree.app.vocabulary
 
+import com.tree.api.model.StatsResponse
+import com.tree.api.model.VocabularySenseResponse
+import com.tree.api.model.WordsResponse
 import com.tree.app.auth.MANAGE_INVITATIONS_AUTHORITY
 import com.tree.app.auth.TreeUserPrincipal
 import kotlin.test.Test

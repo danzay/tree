@@ -1,13 +1,6 @@
 package com.tree.app.translation
 
-data class TranslationLookupResponse(
-    val definitions: List<TranslationDefinitionResponse>,
-)
-
-data class TranslationDefinitionResponse(
-    val partOfSpeech: String?,
-    val translations: List<String>,
-)
+import com.tree.api.model.TranslationLookupResponse
 
 interface TranslationReader {
     fun lookup(text: String): TranslationLookupResponse

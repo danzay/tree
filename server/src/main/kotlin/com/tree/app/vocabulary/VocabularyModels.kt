@@ -1,54 +1,9 @@
 package com.tree.app.vocabulary
 
+import com.tree.api.model.StatsResponse
+import com.tree.api.model.VocabularySenseResponse
+import com.tree.api.model.WordsResponse
 import java.util.UUID
-
-data class TranslationResponse(
-    val language: String,
-    val text: String,
-)
-
-data class CatalogueLevelResponse(
-    val source: String,
-    val sourceName: String,
-    val level: String,
-)
-
-data class VocabularySenseResponse(
-    val id: String,
-    val word: String,
-    val definition: String?,
-    val transcription: String?,
-    val level: String,
-    val reviewStatus: String,
-    val status: String,
-    val partsOfSpeech: List<String>,
-    val translations: List<TranslationResponse>,
-    val collocations: List<String>,
-    val catalogueLevels: List<CatalogueLevelResponse>,
-)
-
-data class WordsResponse(
-    val items: List<VocabularySenseResponse>,
-    val total: Long,
-    val limit: Int,
-    val offset: Int,
-)
-
-data class StatsResponse(
-    val senses: Long,
-    val headwords: Long,
-    val byLevel: Map<String, Long>,
-    val byStatus: Map<String, Long>,
-    val reconciliation: Map<String, Long>,
-    val levelProgress: List<LevelProgressResponse>,
-)
-
-data class LevelProgressResponse(
-    val level: String,
-    val total: Long,
-    val known: Long,
-    val leftToLearn: Long,
-)
 
 data class WordSearchQuery(
     val search: String?,

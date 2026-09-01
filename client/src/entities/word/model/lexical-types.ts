@@ -24,11 +24,7 @@ export interface DictionaryEntry {
   definitionGroups: DictionaryDefinitionGroup[]
 }
 
-export interface TranslationDefinition {
-  partOfSpeech: string | null
-  translations: string[]
-}
-
-export interface TranslationResponse {
-  definitions: TranslationDefinition[]
-}
+export type {
+  TranslationDefinitionResponse as TranslationDefinition,
+  TranslationLookupResponse as TranslationResponse,
+} from '@/shared/api/generated/api-types'

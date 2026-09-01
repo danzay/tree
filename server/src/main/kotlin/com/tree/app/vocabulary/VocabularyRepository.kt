@@ -1,5 +1,14 @@
 package com.tree.app.vocabulary
 
+import com.tree.api.model.CatalogueLevelResponse
+import com.tree.api.model.CefrLevel
+import com.tree.api.model.LearningStatus
+import com.tree.api.model.LevelProgressResponse
+import com.tree.api.model.ReviewStatus
+import com.tree.api.model.StatsResponse
+import com.tree.api.model.TranslationResponse
+import com.tree.api.model.VocabularySenseResponse
+import com.tree.api.model.WordsResponse
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
 import org.springframework.stereotype.Repository
@@ -74,7 +83,7 @@ class VocabularyRepository(
         val total = resultSet.getLong("total")
         val known = resultSet.getLong("known")
         LevelProgressResponse(
-            level = resultSet.getString("level"),
+            level = CefrLevel.forValue(resultSet.getString("level")),
             total = total,
             known = known,
             leftToLearn = total - known,
@@ -218,7 +227,7 @@ class VocabularyRepository(
             resultSet.getLong("sense_id") to CatalogueLevelResponse(
                 source = resultSet.getString("source_code"),
                 sourceName = resultSet.getString("display_name"),
-                level = resultSet.getString("cefr_level"),
+                level = CefrLevel.forValue(resultSet.getString("cefr_level")),
             )
         }.groupBy({ it.first }, { it.second })
 
@@ -228,9 +237,9 @@ class VocabularyRepository(
                 word = row.word,
                 definition = row.definition,
                 transcription = row.transcription,
-                level = row.level,
-                reviewStatus = row.reviewStatus,
-                status = row.status,
+                level = CefrLevel.forValue(row.level),
+                reviewStatus = ReviewStatus.forValue(row.reviewStatus),
+                status = LearningStatus.forValue(row.status),
                 partsOfSpeech = partsOfSpeech[row.id].orEmpty(),
                 translations = translations[row.id].orEmpty(),
                 collocations = collocations[row.id].orEmpty(),

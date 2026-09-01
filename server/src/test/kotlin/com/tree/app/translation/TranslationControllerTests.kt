@@ -1,5 +1,6 @@
 package com.tree.app.translation
 
+import com.tree.api.model.TranslationLookupResponse
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith

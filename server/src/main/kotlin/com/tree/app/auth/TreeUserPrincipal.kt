@@ -1,5 +1,6 @@
 package com.tree.app.auth
 
+import com.tree.api.model.AuthUserResponse
 import org.springframework.security.core.CredentialsContainer
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
@@ -39,7 +40,7 @@ class TreeUserPrincipal(
     }
 
     fun toResponse(): AuthUserResponse = AuthUserResponse(
-        id = id.toString(),
+        id = id,
         email = email,
         displayName = displayName,
         canManageInvitations = internalAuthorities.contains(MANAGE_INVITATIONS_AUTHORITY),

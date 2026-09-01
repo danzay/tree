@@ -3,11 +3,14 @@ plugins {
 	kotlin("plugin.spring") version "2.3.21"
 	id("org.springframework.boot") version "4.1.0"
 	id("io.spring.dependency-management") version "1.1.7"
+	id("org.openapi.generator") version "7.25.0"
 }
 
 group = "com.tree"
 version = "0.0.1-SNAPSHOT"
 description = "Tree application backend"
+
+val apiContractFile = rootProject.projectDir.resolve("../api-contract/openapi.yaml")
 
 java {
 	toolchain {
@@ -44,9 +47,46 @@ dependencies {
 }
 
 kotlin {
+	sourceSets.named("main") {
+		kotlin.srcDir(layout.buildDirectory.dir("generated/openapi/src/main/kotlin"))
+	}
+
 	compilerOptions {
 		freeCompilerArgs.addAll("-Xjsr305=strict", "-Xannotation-default-target=param-property")
 	}
+}
+
+openApiGenerate {
+	generatorName.set("kotlin-spring")
+	inputSpec.set(apiContractFile.absolutePath)
+	outputDir.set(layout.buildDirectory.dir("generated/openapi").get().asFile.absolutePath)
+	modelPackage.set("com.tree.api.model")
+	globalProperties.set(
+		mapOf(
+			"models" to "",
+			"modelDocs" to "false",
+			"modelTests" to "false",
+		),
+	)
+	configOptions.set(
+		mapOf(
+			"dateLibrary" to "java8",
+			"documentationProvider" to "none",
+			"generateJsonIncludeAnnotations" to "false",
+			"generateJsonSetterNullsAnnotations" to "false",
+			"serializationLibrary" to "jackson",
+			"useBeanValidation" to "true",
+			"useSpringBoot4" to "true",
+		),
+	)
+}
+
+openApiValidate {
+	inputSpec.set(apiContractFile.absolutePath)
+}
+
+tasks.named("compileKotlin") {
+	dependsOn("openApiGenerate")
 }
 
 tasks.withType<Test> {

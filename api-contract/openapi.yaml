@@ -1,0 +1,834 @@
+openapi: 3.0.3
+info:
+  title: Tree API
+  version: 1.0.0
+  description: Contract for the Tree vocabulary, library, translation, and authentication API.
+servers:
+  - url: /api
+tags:
+  - name: Authentication
+  - name: Library
+  - name: Translation
+  - name: Vocabulary
+  - name: System
+paths:
+  /health:
+    get:
+      tags: [System]
+      operationId: getHealth
+      summary: Check API and PostgreSQL availability
+      security: []
+      responses:
+        "200":
+          description: API and database are available.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthResponse"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+  /stats:
+    get:
+      tags: [Vocabulary]
+      operationId: getVocabularyStats
+      summary: Get vocabulary progress statistics for the current user
+      responses:
+        "200":
+          description: Vocabulary statistics.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StatsResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+  /words:
+    get:
+      tags: [Vocabulary]
+      operationId: getWords
+      summary: Search and filter vocabulary senses
+      parameters:
+        - name: q
+          in: query
+          description: Case-insensitive headword search.
+          schema:
+            type: string
+            maxLength: 100
+        - name: level
+          in: query
+          schema:
+            $ref: "#/components/schemas/CefrLevel"
+        - name: status
+          in: query
+          schema:
+            $ref: "#/components/schemas/LearningStatus"
+        - name: partOfSpeech
+          in: query
+          schema:
+            type: string
+            pattern: "^[a-z_]+$"
+        - name: language
+          in: query
+          schema:
+            type: string
+            pattern: "^[a-z]{2,3}(-[A-Za-z0-9]+)*$"
+            default: ru
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 30
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            minimum: 0
+            maximum: 100000
+            default: 0
+      responses:
+        "200":
+          description: Matching vocabulary senses.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WordsResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+  /words/{id}:
+    get:
+      tags: [Vocabulary]
+      operationId: getWord
+      summary: Get one vocabulary sense
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+            minimum: 1
+        - name: language
+          in: query
+          schema:
+            type: string
+            pattern: "^[a-z]{2,3}(-[A-Za-z0-9]+)*$"
+            default: ru
+      responses:
+        "200":
+          description: Vocabulary sense details.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VocabularySenseResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+  /library-items:
+    get:
+      tags: [Library]
+      operationId: getLibraryItems
+      summary: List library items owned by the current user
+      parameters:
+        - name: q
+          in: query
+          schema:
+            type: string
+            maxLength: 120
+        - name: type
+          in: query
+          schema:
+            $ref: "#/components/schemas/LibraryItemType"
+      responses:
+        "200":
+          description: Library item summaries.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/LibraryItemSummaryResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+  /library-items/{id}:
+    get:
+      tags: [Library]
+      operationId: getLibraryItem
+      summary: Get a library item with article blocks and vocabulary highlights
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+            minimum: 1
+      responses:
+        "200":
+          description: Library item details.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LibraryItemDetailResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+  /translations:
+    get:
+      tags: [Translation]
+      operationId: getTranslations
+      summary: Look up Russian translations for English text
+      parameters:
+        - name: text
+          in: query
+          required: true
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 100
+      responses:
+        "200":
+          description: Translation groups by part of speech.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TranslationLookupResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+  /auth/config:
+    get:
+      tags: [Authentication]
+      operationId: getAuthConfig
+      summary: Get public authentication configuration
+      security: []
+      responses:
+        "200":
+          description: Authentication configuration.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthConfigResponse"
+  /auth/csrf:
+    get:
+      tags: [Authentication]
+      operationId: getCsrfToken
+      summary: Create or refresh the CSRF cookie and return its request header value
+      security: []
+      responses:
+        "200":
+          description: CSRF token details.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CsrfResponse"
+  /auth/me:
+    get:
+      tags: [Authentication]
+      operationId: getCurrentUser
+      summary: Get the authenticated user
+      responses:
+        "200":
+          description: Current user.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthUserResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+  /auth/login:
+    post:
+      tags: [Authentication]
+      operationId: login
+      summary: Authenticate with email and password
+      security:
+        - csrfToken: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+      responses:
+        "200":
+          description: Authenticated user.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthUserResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+  /auth/register:
+    post:
+      tags: [Authentication]
+      operationId: register
+      summary: Register using a single-use invitation
+      security:
+        - csrfToken: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegistrationRequest"
+      responses:
+        "200":
+          description: Newly registered user.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthUserResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+  /auth/google/intent:
+    post:
+      tags: [Authentication]
+      operationId: createGoogleIntent
+      summary: Prepare a Google login or registration redirect
+      security:
+        - csrfToken: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GoogleIntentRequest"
+      responses:
+        "200":
+          description: Google authorization path.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GoogleIntentResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+  /auth/google/link-intent:
+    post:
+      tags: [Authentication]
+      operationId: createGoogleLinkIntent
+      summary: Prepare a Google account-linking redirect
+      security:
+        - cookieAuth: []
+          csrfToken: []
+      responses:
+        "200":
+          description: Google authorization path.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GoogleIntentResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+  /auth/invitations:
+    post:
+      tags: [Authentication]
+      operationId: createInvitation
+      summary: Create a single-use registration invitation
+      security:
+        - cookieAuth: []
+          csrfToken: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InvitationRequest"
+      responses:
+        "200":
+          description: Registration invitation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InvitationResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "409":
+          $ref: "#/components/responses/Conflict"
+  /auth/logout:
+    post:
+      tags: [Authentication]
+      operationId: logout
+      summary: End the current Tree session
+      security:
+        - cookieAuth: []
+          csrfToken: []
+      responses:
+        "204":
+          description: Session ended.
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+components:
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: TREE_SESSION
+    csrfToken:
+      type: apiKey
+      in: header
+      name: X-XSRF-TOKEN
+  responses:
+    BadRequest:
+      description: Request validation failed.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    Unauthorized:
+      description: Authentication is required or credentials are invalid.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    Forbidden:
+      description: The current user cannot perform this action.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    NotFound:
+      description: Requested resource was not found.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    Conflict:
+      description: Request conflicts with existing state.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    TooManyRequests:
+      description: Too many authentication attempts.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    ServiceUnavailable:
+      description: API or database is unavailable.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+  schemas:
+    ErrorResponse:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: string
+    HealthResponse:
+      type: object
+      required: [status, database]
+      properties:
+        status:
+          type: string
+          enum: [ok]
+        database:
+          type: string
+          enum: [reachable]
+    CefrLevel:
+      type: string
+      enum: [A1, A2, B1, B2, C1, C2]
+    LearningStatus:
+      type: string
+      enum: [new, learning, reviewing, learned, known, suspended]
+    ReviewStatus:
+      type: string
+      enum: [imported, verified, needs_review]
+    LibraryItemType:
+      type: string
+      enum: [article, story, video, podcast, note]
+    LibraryReadingStatus:
+      type: string
+      enum: [not_started, in_progress, completed]
+    ArticleBlockType:
+      type: string
+      enum: [heading, paragraph]
+    TranslationResponse:
+      type: object
+      required: [language, text]
+      properties:
+        language:
+          type: string
+        text:
+          type: string
+    CatalogueLevelResponse:
+      type: object
+      required: [source, sourceName, level]
+      properties:
+        source:
+          type: string
+        sourceName:
+          type: string
+        level:
+          $ref: "#/components/schemas/CefrLevel"
+    VocabularySenseResponse:
+      type: object
+      required:
+        - id
+        - word
+        - definition
+        - transcription
+        - level
+        - reviewStatus
+        - status
+        - partsOfSpeech
+        - translations
+        - collocations
+        - catalogueLevels
+      properties:
+        id:
+          type: string
+          pattern: "^[1-9][0-9]*$"
+        word:
+          type: string
+        definition:
+          type: string
+          nullable: true
+        transcription:
+          type: string
+          nullable: true
+        level:
+          $ref: "#/components/schemas/CefrLevel"
+        reviewStatus:
+          $ref: "#/components/schemas/ReviewStatus"
+        status:
+          $ref: "#/components/schemas/LearningStatus"
+        partsOfSpeech:
+          type: array
+          items:
+            type: string
+        translations:
+          type: array
+          items:
+            $ref: "#/components/schemas/TranslationResponse"
+        collocations:
+          type: array
+          items:
+            type: string
+        catalogueLevels:
+          type: array
+          items:
+            $ref: "#/components/schemas/CatalogueLevelResponse"
+    WordsResponse:
+      type: object
+      required: [items, total, limit, offset]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/VocabularySenseResponse"
+        total:
+          type: integer
+          format: int64
+          minimum: 0
+        limit:
+          type: integer
+          minimum: 1
+        offset:
+          type: integer
+          minimum: 0
+    LevelProgressResponse:
+      type: object
+      required: [level, total, known, leftToLearn]
+      properties:
+        level:
+          $ref: "#/components/schemas/CefrLevel"
+        total:
+          type: integer
+          format: int64
+          minimum: 0
+        known:
+          type: integer
+          format: int64
+          minimum: 0
+        leftToLearn:
+          type: integer
+          format: int64
+          minimum: 0
+    StatsResponse:
+      type: object
+      required:
+        [senses, headwords, byLevel, byStatus, reconciliation, levelProgress]
+      properties:
+        senses:
+          type: integer
+          format: int64
+          minimum: 0
+        headwords:
+          type: integer
+          format: int64
+          minimum: 0
+        byLevel:
+          type: object
+          additionalProperties:
+            type: integer
+            format: int64
+        byStatus:
+          type: object
+          additionalProperties:
+            type: integer
+            format: int64
+        reconciliation:
+          type: object
+          additionalProperties:
+            type: integer
+            format: int64
+        levelProgress:
+          type: array
+          items:
+            $ref: "#/components/schemas/LevelProgressResponse"
+    LibraryItemSummaryResponse:
+      type: object
+      required:
+        - id
+        - slug
+        - title
+        - type
+        - summary
+        - topic
+        - coverImagePath
+        - estimatedReadMinutes
+        - vocabularyCount
+        - readingStatus
+        - youtubeVideoId
+        - lastOpenedAt
+        - updatedAt
+      properties:
+        id:
+          type: integer
+          format: int64
+          minimum: 1
+        slug:
+          type: string
+        title:
+          type: string
+        type:
+          $ref: "#/components/schemas/LibraryItemType"
+        summary:
+          type: string
+        topic:
+          type: string
+        coverImagePath:
+          type: string
+        estimatedReadMinutes:
+          type: integer
+          minimum: 1
+        vocabularyCount:
+          type: integer
+          minimum: 0
+        readingStatus:
+          $ref: "#/components/schemas/LibraryReadingStatus"
+        youtubeVideoId:
+          type: string
+          nullable: true
+        lastOpenedAt:
+          type: string
+          format: date-time
+          nullable: true
+        updatedAt:
+          type: string
+          format: date-time
+    ArticleHighlightResponse:
+      type: object
+      required: [start, end, senseId, word, level, status]
+      properties:
+        start:
+          type: integer
+          minimum: 0
+        end:
+          type: integer
+          minimum: 1
+        senseId:
+          type: integer
+          format: int64
+          minimum: 1
+        word:
+          type: string
+        level:
+          $ref: "#/components/schemas/CefrLevel"
+        status:
+          $ref: "#/components/schemas/LearningStatus"
+    ArticleBlockResponse:
+      type: object
+      required: [position, type, text, highlights]
+      properties:
+        position:
+          type: integer
+          minimum: 1
+        type:
+          $ref: "#/components/schemas/ArticleBlockType"
+        text:
+          type: string
+        highlights:
+          type: array
+          items:
+            $ref: "#/components/schemas/ArticleHighlightResponse"
+    LibraryItemDetailResponse:
+      type: object
+      required: [item, blocks]
+      properties:
+        item:
+          $ref: "#/components/schemas/LibraryItemSummaryResponse"
+        blocks:
+          type: array
+          items:
+            $ref: "#/components/schemas/ArticleBlockResponse"
+    TranslationDefinitionResponse:
+      type: object
+      required: [partOfSpeech, translations]
+      properties:
+        partOfSpeech:
+          type: string
+          nullable: true
+        translations:
+          type: array
+          items:
+            type: string
+    TranslationLookupResponse:
+      type: object
+      required: [definitions]
+      properties:
+        definitions:
+          type: array
+          items:
+            $ref: "#/components/schemas/TranslationDefinitionResponse"
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+          minLength: 1
+          maxLength: 254
+          pattern: '.*\S.*'
+        password:
+          type: string
+          format: password
+          minLength: 12
+          maxLength: 128
+          pattern: '.*\S.*'
+    RegistrationRequest:
+      type: object
+      required: [email, displayName, password, invitationToken]
+      properties:
+        email:
+          type: string
+          format: email
+          minLength: 1
+          maxLength: 254
+          pattern: '.*\S.*'
+        displayName:
+          type: string
+          minLength: 2
+          maxLength: 80
+          pattern: '.*\S.*'
+        password:
+          type: string
+          format: password
+          minLength: 12
+          maxLength: 128
+          pattern: '.*\S.*'
+        invitationToken:
+          type: string
+          minLength: 1
+          maxLength: 512
+          pattern: '.*\S.*'
+    GoogleIntentRequest:
+      type: object
+      properties:
+        invitationToken:
+          type: string
+          maxLength: 512
+          nullable: true
+    InvitationRequest:
+      type: object
+      required: [email]
+      properties:
+        email:
+          type: string
+          format: email
+          minLength: 1
+          maxLength: 254
+          pattern: '.*\S.*'
+    AuthUserResponse:
+      type: object
+      required: [id, email, displayName, canManageInvitations, googleLinked]
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        displayName:
+          type: string
+        canManageInvitations:
+          type: boolean
+        googleLinked:
+          type: boolean
+    AuthConfigResponse:
+      type: object
+      required: [googleEnabled]
+      properties:
+        googleEnabled:
+          type: boolean
+    CsrfResponse:
+      type: object
+      required: [headerName, token]
+      properties:
+        headerName:
+          type: string
+        token:
+          type: string
+    GoogleIntentResponse:
+      type: object
+      required: [authorizationPath]
+      properties:
+        authorizationPath:
+          type: string
+    InvitationResponse:
+      type: object
+      required: [email, token, expiresAt]
+      properties:
+        email:
+          type: string
+          format: email
+        token:
+          type: string
+        expiresAt:
+          type: string
+          format: date-time
+security:
+  - cookieAuth: []

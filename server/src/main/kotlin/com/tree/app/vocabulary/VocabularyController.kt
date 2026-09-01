@@ -1,5 +1,9 @@
 package com.tree.app.vocabulary
 
+import com.tree.api.model.HealthResponse
+import com.tree.api.model.StatsResponse
+import com.tree.api.model.VocabularySenseResponse
+import com.tree.api.model.WordsResponse
 import com.tree.app.auth.TreeUserPrincipal
 import org.springframework.http.HttpStatus
 import org.springframework.security.core.annotation.AuthenticationPrincipal
@@ -16,9 +20,13 @@ class VocabularyController(
     private val repository: VocabularyReader,
 ) {
     @GetMapping("/health")
-    fun health(): Map<String, String> {
+    fun health(): HealthResponse {
         repository.checkHealth()
-        return mapOf("status" to "ok", "database" to "reachable")
+
+        return HealthResponse(
+            status = HealthResponse.Status.ok,
+            database = HealthResponse.Database.reachable,
+        )
     }
 
     @GetMapping("/stats")

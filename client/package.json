@@ -4,6 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "api:generate": "orval --config orval.config.ts",
     "dev": "vite",
     "build": "tsc -b && vite build",
     "format": "prettier --write .",
@@ -41,6 +42,7 @@
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.3",
     "globals": "^17.7.0",
+    "orval": "^8.27.0",
     "prettier": "^3.9.6",
     "sass": "^1.102.0",
     "stylelint": "^17.14.1",

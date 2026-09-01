@@ -1,5 +1,7 @@
 package com.tree.app.library
 
+import com.tree.api.model.LibraryItemDetailResponse
+import com.tree.api.model.LibraryItemSummaryResponse
 import com.tree.app.auth.TreeUserPrincipal
 import org.springframework.http.HttpStatus
 import org.springframework.security.core.annotation.AuthenticationPrincipal

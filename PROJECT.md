@@ -56,7 +56,7 @@ Selected frontend foundations:
 
 | Area          | Selection                                                             |
 | ------------- | --------------------------------------------------------------------- |
-| Routing       | React Router with browser routing and server-side SPA fallback         |
+| Routing       | React Router with browser routing and server-side SPA fallback        |
 | Client state  | Zustand, colocated with the owning page or feature                    |
 | Server state  | TanStack Query with entity-owned query hooks and keys                 |
 | HTTP client   | A shared Axios instance; requests live in entity/feature API segments |
@@ -112,20 +112,20 @@ product and maintainability choice rather than a performance-motivated rewrite.
 
 ### Target stack
 
-| Area                      | Selection                                                |
-| ------------------------- | -------------------------------------------------------- |
-| Language                  | Kotlin                                                   |
-| Framework                 | Spring Boot                                              |
-| HTTP model                | Spring MVC, not WebFlux                                  |
-| Database                  | PostgreSQL                                               |
-| SQL access                | jOOQ                                                     |
-| Migrations                | Flyway                                                   |
-| Authentication            | Spring Security with OIDC                                |
-| API contract              | OpenAPI                                                  |
-| Browser client generation | OpenAPI-generated TypeScript client                      |
-| Tests                     | JUnit and Testcontainers                                 |
-| Build                     | Gradle Kotlin DSL                                        |
-| Monitoring                | Spring Boot Actuator and Micrometer-compatible telemetry |
+| Area                    | Selection                                                |
+| ----------------------- | -------------------------------------------------------- |
+| Language                | Kotlin                                                   |
+| Framework               | Spring Boot                                              |
+| HTTP model              | Spring MVC, not WebFlux                                  |
+| Database                | PostgreSQL                                               |
+| SQL access              | jOOQ                                                     |
+| Migrations              | Flyway                                                   |
+| Authentication          | Spring Security with OIDC                                |
+| API contract            | OpenAPI                                                  |
+| Browser type generation | OpenAPI-generated TypeScript transport models            |
+| Tests                   | JUnit and Testcontainers                                 |
+| Build                   | Gradle Kotlin DSL                                        |
+| Monitoring              | Spring Boot Actuator and Micrometer-compatible telemetry |
 
 Exact supported versions of Kotlin, the JDK, Spring Boot, and dependencies must be
 chosen and pinned when implementation starts.
@@ -284,9 +284,10 @@ DictionaryAPI.dev definitions are read directly by the browser because that API
 does not require credentials. Yandex Dictionary requests pass through Kotlin so
 `YANDEX_KEY` is never exposed to the React client.
 
-OpenAPI should be the contract between Kotlin and React. TypeScript request and
-response types should be generated from that contract instead of being manually
-duplicated.
+OpenAPI is the contract between Kotlin and React. The neutral contract lives in
+`api-contract/openapi.yaml`; Kotlin DTOs and TypeScript request/response types are
+generated from it instead of being manually duplicated. Request methods remain
+handwritten in their owning backend controllers and frontend API modules.
 
 ## Media storage and caching
 
@@ -350,8 +351,9 @@ The editor library and durable annotation-anchor format remain open decisions.
    migrations.
 4. Health, statistics, word search, and word-sense reads are the first migrated
    endpoints.
-5. Authentication and user ownership are implemented. OpenAPI generation, status
-   mutations, and material analysis remain future modules.
+5. Authentication and user ownership are implemented. OpenAPI now generates
+   shared transport models; status mutations and material analysis remain future
+   modules.
 
 ## Production requirements
 

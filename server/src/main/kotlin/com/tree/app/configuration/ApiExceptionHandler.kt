@@ -1,5 +1,6 @@
 package com.tree.app.configuration
 
+import com.tree.api.model.ErrorResponse
 import com.tree.app.auth.AuthApiException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -11,9 +12,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice
 class ApiExceptionHandler {
     @ExceptionHandler(IllegalArgumentException::class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    fun invalidInput(): Map<String, String> = mapOf("error" to "Invalid request")
+    fun invalidInput(): ErrorResponse = ErrorResponse(error = "Invalid request")
 
     @ExceptionHandler(AuthApiException::class)
-    fun authError(exception: AuthApiException): ResponseEntity<Map<String, String>> =
-        ResponseEntity.status(exception.status).body(mapOf("error" to exception.code))
+    fun authError(exception: AuthApiException): ResponseEntity<ErrorResponse> =
+        ResponseEntity.status(exception.status).body(ErrorResponse(error = exception.code))
 }

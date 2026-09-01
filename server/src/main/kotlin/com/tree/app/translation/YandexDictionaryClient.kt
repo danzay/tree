@@ -1,5 +1,7 @@
 package com.tree.app.translation
 
+import com.tree.api.model.TranslationDefinitionResponse
+import com.tree.api.model.TranslationLookupResponse
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
 import org.slf4j.LoggerFactory

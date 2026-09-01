@@ -1,5 +1,7 @@
 package com.tree.app.library
 
+import com.tree.api.model.CefrLevel
+import com.tree.api.model.LearningStatus
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -14,7 +16,7 @@ class ArticleVocabularyMatcherTests {
 
         assertEquals(1, highlights.size)
         assertEquals("eating", "Everyone stopped eating meat.".substring(highlights[0].start, highlights[0].end))
-        assertEquals("A1", highlights[0].level)
+        assertEquals(CefrLevel.A1, highlights[0].level)
     }
 
     @Test
@@ -28,8 +30,8 @@ class ArticleVocabularyMatcherTests {
 
         val highlight = matcher.find("Prices rise.").single()
 
-        assertEquals("B1", highlight.level)
-        assertEquals("learning", highlight.status)
+        assertEquals(CefrLevel.B1, highlight.level)
+        assertEquals(LearningStatus.learning, highlight.status)
     }
 
     @Test
@@ -55,7 +57,7 @@ class ArticleVocabularyMatcherTests {
 
         val highlight = matcher.find("A perspicacious observation.").single()
 
-        assertEquals("C2", highlight.level)
+        assertEquals(CefrLevel.C2, highlight.level)
     }
 
     private fun candidate(

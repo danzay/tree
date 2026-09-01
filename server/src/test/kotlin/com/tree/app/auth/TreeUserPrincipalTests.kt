@@ -24,7 +24,7 @@ class TreeUserPrincipalTests {
             setOf(MANAGE_INVITATIONS_AUTHORITY),
             principal.authorities.map { it.authority }.toSet(),
         )
-        assertEquals(userId.toString(), principal.toResponse().id)
+        assertEquals(userId, principal.toResponse().id)
         assertEquals(true, principal.toResponse().canManageInvitations)
 
         principal.eraseCredentials()

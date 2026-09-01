@@ -1,5 +1,11 @@
 package com.tree.app.library
 
+import com.tree.api.model.ArticleBlockResponse
+import com.tree.api.model.ArticleBlockType
+import com.tree.api.model.LibraryItemDetailResponse
+import com.tree.api.model.LibraryItemSummaryResponse
+import com.tree.api.model.LibraryItemType
+import com.tree.api.model.LibraryReadingStatus
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
 import org.springframework.stereotype.Repository
@@ -64,7 +70,7 @@ class LibraryRepository(
         val blocks = blockRows.map { block ->
             ArticleBlockResponse(
                 position = block.position,
-                type = block.type,
+                type = ArticleBlockType.forValue(block.type),
                 text = block.text,
                 highlights = vocabularyMatcher.find(block.text),
             )
@@ -111,20 +117,16 @@ class LibraryRepository(
                 id = resultSet.getLong("id"),
                 slug = resultSet.getString("slug"),
                 title = resultSet.getString("title"),
-                type = resultSet.getString("item_type"),
+                type = LibraryItemType.forValue(resultSet.getString("item_type")),
                 summary = resultSet.getString("summary"),
                 topic = resultSet.getString("topic"),
                 coverImagePath = resultSet.getString("cover_image_path"),
                 estimatedReadMinutes = resultSet.getInt("estimated_read_minutes"),
                 vocabularyCount = resultSet.getInt("vocabulary_count"),
-                readingStatus = resultSet.getString("reading_status"),
+                readingStatus = LibraryReadingStatus.forValue(resultSet.getString("reading_status")),
                 youtubeVideoId = resultSet.getString("youtube_video_id"),
-                lastOpenedAt = resultSet.getObject("last_opened_at", OffsetDateTime::class.java)
-                    ?.toInstant()
-                    ?.toString(),
-                updatedAt = resultSet.getObject("updated_at", OffsetDateTime::class.java)
-                    .toInstant()
-                    .toString(),
+                lastOpenedAt = resultSet.getObject("last_opened_at", OffsetDateTime::class.java),
+                updatedAt = resultSet.getObject("updated_at", OffsetDateTime::class.java),
             )
         }
         const val SELECT_ITEM_FIELDS = """

@@ -1,5 +1,8 @@
 package com.tree.app.library
 
+import com.tree.api.model.ArticleHighlightResponse
+import com.tree.api.model.CefrLevel
+import com.tree.api.model.LearningStatus
 import java.text.Normalizer
 import java.util.Locale
 
@@ -156,8 +159,8 @@ class ArticleVocabularyMatcher(
         end = end,
         senseId = senseId,
         word = word,
-        level = level,
-        status = status,
+        level = CefrLevel.forValue(level),
+        status = LearningStatus.forValue(status),
     )
 
     private fun normalize(value: String): String =
