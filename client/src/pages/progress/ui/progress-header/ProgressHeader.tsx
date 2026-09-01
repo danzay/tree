@@ -7,7 +7,7 @@ export function ProgressHeader() {
   return (
     <header className={styles.header}>
       <p>{t('progress.eyebrow')}</p>
-      <h1 id="progress-title">{t('progress.title')}</h1>
+      <h3 id="progress-title">{t('progress.title')}</h3>
       <span>{t('progress.description')}</span>
     </header>
   )

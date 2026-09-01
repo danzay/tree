@@ -283,12 +283,17 @@ export const EN_TRANSLATIONS = {
   progress: {
     eyebrow: 'Progress',
     title: 'Your vocabulary is growing',
-    description: 'See how much of every Oxford level you already know and what remains to learn.',
+    description: 'See how much of your selected Oxford levels you know and what remains to learn.',
     loading: 'Loading your progress…',
+    filters: {
+      title: 'Levels included',
+      description: 'Choose which CEFR levels count toward your progress.',
+      label: 'CEFR levels included in progress',
+    },
     overview: {
       eyebrow: 'Overall progress',
-      title: 'All vocabulary',
-      total: 'All words',
+      title: 'Selected vocabulary',
+      total: 'Words included',
       known: 'Already known',
       left: 'Left to learn',
       progressLabel: 'Overall vocabulary progress',

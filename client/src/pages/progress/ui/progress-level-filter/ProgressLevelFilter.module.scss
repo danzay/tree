@@ -1,0 +1,75 @@
+@use '@/shared/styles/mixins';
+
+.filter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 28px;
+  margin-top: 32px;
+  padding: 20px 22px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--paper) 92%, var(--sage-soft));
+
+  h2 {
+    margin: 0;
+    color: var(--moss-dark);
+    font-size: 21px;
+
+    @include mixins.serif-heading;
+  }
+
+  p {
+    margin: 5px 0 0;
+    color: var(--muted);
+    font-size: 13px;
+  }
+}
+
+.levels {
+  display: flex;
+  flex-wrap: wrap;
+  flex-shrink: 0;
+  gap: 8px;
+}
+
+.level {
+  min-width: 46px;
+  padding: 9px 12px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--paper);
+  color: var(--muted);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+
+  &[data-hovered] {
+    border-color: var(--sage);
+    color: var(--moss-dark);
+  }
+
+  &[data-selected] {
+    border-color: var(--moss);
+    background: var(--sage-soft);
+    color: var(--moss-dark);
+  }
+
+  &[data-focus-visible] {
+    outline: 2px solid var(--moss);
+    outline-offset: 2px;
+  }
+}
+
+@media (width <= 720px) {
+  .filter {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .levels {
+    width: 100%;
+  }
+}

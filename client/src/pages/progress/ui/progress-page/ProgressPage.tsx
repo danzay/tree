@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next'
 import { useProgressPage } from '../../model/use-progress-page'
 import { LevelProgressChart } from '../level-progress-chart/LevelProgressChart'
 import { ProgressHeader } from '../progress-header/ProgressHeader'
+import { ProgressLevelFilter } from '../progress-level-filter/ProgressLevelFilter'
 import { ProgressOverview } from '../progress-overview/ProgressOverview'
 import styles from './ProgressPage.module.scss'
 
@@ -29,13 +30,17 @@ export function ProgressPage() {
   return (
     <section className={styles.page} aria-labelledby="progress-title">
       <ProgressHeader />
+      <ProgressLevelFilter
+        onChange={page.handleLevelsChange}
+        selectedLevels={page.selectedLevels}
+      />
       <div className={styles.content}>
         <ProgressOverview
           total={page.overview.total}
           known={page.overview.known}
           leftToLearn={page.overview.leftToLearn}
         />
-        <LevelProgressChart levels={page.stats.levelProgress} />
+        <LevelProgressChart levels={page.levelProgress} />
       </div>
     </section>
   )
