@@ -14,7 +14,7 @@
   }
 }
 
-@media (max-width: 720px) {
+@media (width <= 720px) {
   .video {
     margin: 28px 24px 24px;
   }

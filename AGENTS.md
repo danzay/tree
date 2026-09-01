@@ -40,12 +40,13 @@ These instructions apply to the entire repository. The React client lives in `cl
 - Avoid conditional expressions that return JSX. A one-line conditional expression is acceptable only when it remains immediately readable.
 - Split compound conditions into named booleans. Extract any subcondition that performs calculation or needs explanation.
 - Never put a complex condition directly in JSX. Compute and name display booleans such as `withTitle`, `withDescription`, or `isEmpty` above the return statement.
-- Always use braces for `if` statements and leave a blank line after an `if` block before the next statement, except between an `if` block and its `else`, `catch`, or `finally` clause.
+- Always use braces for `if` statements. Leave a blank line before and after complete `if` and `switch` statements, except between connected `if`/`else`, `try`/`catch`, or `try`/`finally` branches.
+- Leave a blank line before a `return` statement unless it is the first statement in its block.
 - Use spaces inside curly braces, as in `{ value }` and `import { value }`.
 - Put JSX elements on their own lines when JSX contains more than one child or spans multiple lines.
 
 ## Quality checks
 
-- Run `npm run format`, `npm run lint`, `npm test`, and `npm run build` from `client/` after a relevant frontend change.
+- Run `npm run format`, `npm run lint`, `npm run lint:styles`, `npm test`, and `npm run build` from `client/` after a relevant frontend change.
 - Run `./gradlew test` and `./gradlew build` from `server/` after a relevant backend change.
 - Do not expose `.env` values. Keep `.env` files ignored and browser code separated from direct PostgreSQL access.

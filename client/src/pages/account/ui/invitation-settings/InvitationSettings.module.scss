@@ -59,6 +59,7 @@
     &:focus {
       border-color: var(--moss);
       outline: none;
+
       @include mixins.focus-ring(0);
     }
   }
@@ -85,7 +86,7 @@
   font-size: 14px;
 }
 
-@media (max-width: 620px) {
+@media (width <= 620px) {
   .form {
     grid-template-columns: 1fr;
   }

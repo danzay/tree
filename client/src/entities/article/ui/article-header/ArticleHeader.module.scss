@@ -10,6 +10,7 @@
     color: var(--moss-dark);
     font-size: clamp(38px, 4vw, 58px);
     line-height: 1.08;
+
     @include mixins.serif-heading;
   }
 }
@@ -43,7 +44,7 @@
   font-weight: 600;
 }
 
-@media (max-width: 720px) {
+@media (width <= 720px) {
   .header {
     padding: 34px 24px 28px;
   }

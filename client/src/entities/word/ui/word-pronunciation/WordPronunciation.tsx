@@ -51,6 +51,8 @@ export function WordPronunciation({
           >
             <SpeakerIcon />
           </Button>
+          {/* A pronunciation clip contains no speech content that can be meaningfully captioned. */}
+          {/* eslint-disable-next-line jsx-a11y-x/media-has-caption */}
           <audio ref={audioRef} src={pronunciation.audioUrl} preload="none" />
         </>
       )}

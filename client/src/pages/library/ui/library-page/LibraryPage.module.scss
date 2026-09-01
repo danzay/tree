@@ -11,16 +11,16 @@
   border: 1px solid var(--border);
   border-radius: 14px;
   background: var(--paper);
-  box-shadow: 0 7px 20px rgba(30, 43, 32, 0.08);
+  box-shadow: 0 7px 20px rgb(30 43 32 / 8%);
 }
 
-@media (max-width: 1260px) {
+@media (width <= 1260px) {
   .page {
     width: min(1120px, calc(100% - 40px));
   }
 }
 
-@media (max-width: 720px) {
+@media (width <= 720px) {
   .page {
     width: min(100% - 24px, 640px);
     padding-top: 28px;

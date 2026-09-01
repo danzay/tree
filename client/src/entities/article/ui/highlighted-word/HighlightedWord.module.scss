@@ -1,5 +1,4 @@
 @use '@/shared/styles/mixins';
-
 @include mixins.level-background-classes;
 
 .highlight {
@@ -8,10 +7,9 @@
   box-decoration-break: clone;
   color: inherit;
   cursor: pointer;
-  -webkit-box-decoration-break: clone;
 
   &:hover {
-    box-shadow: 0 0 0 2px rgba(36, 92, 53, 0.18);
+    box-shadow: 0 0 0 2px rgb(36 92 53 / 18%);
   }
 }
 

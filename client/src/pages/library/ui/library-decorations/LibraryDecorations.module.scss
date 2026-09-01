@@ -42,12 +42,12 @@
   width: 86px;
   height: 26px;
   border-radius: 2px;
-  background: rgba(241, 185, 142, 0.58);
+  background: rgb(241 185 142 / 58%);
   pointer-events: none;
   rotate: 5deg;
 }
 
-@media (max-width: 1260px) {
+@media (width <= 1260px) {
   .botanical,
   .tape {
     display: none;

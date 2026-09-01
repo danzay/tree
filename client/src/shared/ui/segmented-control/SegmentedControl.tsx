@@ -26,6 +26,7 @@ export function SegmentedControl<T extends string>({
 }: SegmentedControlProps<T>) {
   const handleSelectionChange = (keys: Set<Key>) => {
     const nextValue = keys.values().next().value
+
     if (typeof nextValue === 'string') {
       onValueChange(nextValue as T)
     }

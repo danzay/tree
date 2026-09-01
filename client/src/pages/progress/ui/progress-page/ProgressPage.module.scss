@@ -23,6 +23,7 @@
 
   h1 {
     color: var(--moss-dark);
+
     @include mixins.serif-heading;
   }
 
@@ -31,7 +32,7 @@
   }
 }
 
-@media (max-width: 720px) {
+@media (width <= 720px) {
   .page {
     width: min(100% - 24px, 680px);
     padding-top: 34px;

@@ -162,7 +162,7 @@
   }
 }
 
-@media (max-width: 1260px) {
+@media (width <= 1260px) {
   .toolbar {
     grid-template-columns: 250px 1fr 170px 92px;
     gap: 10px;
@@ -173,7 +173,7 @@
   }
 }
 
-@media (max-width: 980px) {
+@media (width <= 980px) {
   .toolbar {
     grid-template-columns: 1fr 180px 102px;
   }
@@ -185,7 +185,7 @@
   }
 }
 
-@media (max-width: 720px) {
+@media (width <= 720px) {
   .toolbar {
     grid-template-columns: 1fr 90px;
   }

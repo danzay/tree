@@ -40,6 +40,7 @@ export function useAuthConfigQuery() {
 
 export function useLoginMutation() {
   const queryClient = useQueryClient()
+
   return useMutation({
     mutationFn: login,
     onSuccess: (user) => queryClient.setQueryData(AUTH_QUERY_KEYS.user, user),
@@ -48,6 +49,7 @@ export function useLoginMutation() {
 
 export function useRegistrationMutation() {
   const queryClient = useQueryClient()
+
   return useMutation({
     mutationFn: register,
     onSuccess: (user) => queryClient.setQueryData(AUTH_QUERY_KEYS.user, user),
@@ -56,6 +58,7 @@ export function useRegistrationMutation() {
 
 export function useLogoutMutation() {
   const queryClient = useQueryClient()
+
   return useMutation({
     mutationFn: logout,
     onSuccess: () => {

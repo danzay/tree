@@ -33,7 +33,7 @@
   color: #a33d28;
 }
 
-@media (max-width: 720px) {
+@media (width <= 720px) {
   .list {
     grid-template-columns: 1fr;
   }

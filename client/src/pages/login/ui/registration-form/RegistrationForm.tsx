@@ -4,6 +4,7 @@ import { Button } from 'react-aria-components/Button'
 import { Form } from 'react-aria-components/Form'
 import { FieldError, Input, Label, TextField } from 'react-aria-components/TextField'
 import { AuthErrorMessage, useRegistrationMutation } from '@/features/auth'
+import { getFormDataString } from '@/shared/lib/form-data/getFormDataString'
 import styles from './RegistrationForm.module.scss'
 
 interface RegistrationFormProps {
@@ -22,11 +23,11 @@ export function RegistrationForm({ invitationToken }: RegistrationFormProps) {
   const handleSubmit: NonNullable<ComponentProps<typeof Form>['onSubmit']> = (event) => {
     event.preventDefault()
     const data = new FormData(event.currentTarget)
-    const token = String(data.get('invitationToken') ?? '').trim()
+    const token = getFormDataString(data, 'invitationToken').trim()
     registrationMutation.mutate({
-      displayName: String(data.get('displayName') ?? ''),
-      email: String(data.get('email') ?? ''),
-      password: String(data.get('password') ?? ''),
+      displayName: getFormDataString(data, 'displayName'),
+      email: getFormDataString(data, 'email'),
+      password: getFormDataString(data, 'password'),
       invitationToken: token,
     })
   }

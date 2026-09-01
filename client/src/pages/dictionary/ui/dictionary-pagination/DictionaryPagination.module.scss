@@ -41,7 +41,7 @@
   }
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .pagination {
     gap: 8px;
 

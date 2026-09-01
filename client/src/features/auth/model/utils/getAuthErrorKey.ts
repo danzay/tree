@@ -23,5 +23,6 @@ export function getAuthErrorKey(error: unknown, fallbackKey: string) {
   }
 
   const code = error.response?.data.error
+
   return code !== undefined && AUTH_ERROR_CODES.has(code) ? `auth.errors.${code}` : fallbackKey
 }

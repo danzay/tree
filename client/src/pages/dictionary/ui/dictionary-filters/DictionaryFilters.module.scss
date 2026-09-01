@@ -38,11 +38,12 @@
   &:focus,
   &[data-focus-visible] {
     border-color: var(--moss);
+
     @include mixins.focus-ring(0);
   }
 }
 
-@media (max-width: 720px) {
+@media (width <= 720px) {
   .filters {
     grid-template-columns: 1fr;
   }

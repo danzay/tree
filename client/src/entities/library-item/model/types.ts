@@ -1,4 +1,4 @@
-import { LIBRARY_ITEM_READING_STATUSES, LIBRARY_ITEM_TYPES } from './consts'
+import type { LIBRARY_ITEM_READING_STATUSES, LIBRARY_ITEM_TYPES } from './consts'
 
 export type LibraryItemType = (typeof LIBRARY_ITEM_TYPES)[number]
 export type LibraryItemReadingStatus = (typeof LIBRARY_ITEM_READING_STATUSES)[number]

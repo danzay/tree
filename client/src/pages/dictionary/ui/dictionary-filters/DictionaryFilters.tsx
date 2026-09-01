@@ -28,6 +28,7 @@ export function DictionaryFilters({
   const getStatusLabel = (item: string) => {
     const translationKey = `dictionary.status.${item}`
     const fallback = item.replace(STATUS_SEPARATOR, STATUS_LABEL_SEPARATOR)
+
     return t(translationKey, { defaultValue: fallback })
   }
 

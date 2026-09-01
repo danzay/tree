@@ -10,7 +10,8 @@
   color: #17243b;
   background: #f6f0e5;
   font-synthesis: none;
-  text-rendering: optimizeLegibility;
+  text-rendering: optimizelegibility;
+
   --parchment: #f6f0e5;
   --paper: #fffdf7;
   --moss: #245c35;
@@ -25,7 +26,7 @@
   --ink: #17243b;
   --muted: #667085;
   --border: #d9d2c7;
-  --focus: rgba(36, 92, 53, 0.3);
+  --focus: rgb(36 92 53 / 30%);
   --level-a1: #fff2b2;
   --level-a2: #cceadf;
   --level-b1: #a8c6e7;
@@ -43,16 +44,19 @@ html {
   min-height: 100%;
   background: var(--parchment);
 }
+
 body {
   min-width: 320px;
   min-height: 100vh;
   margin: 0;
 }
+
 button,
 input,
 select {
   font: inherit;
 }
+
 button,
 a,
 input,

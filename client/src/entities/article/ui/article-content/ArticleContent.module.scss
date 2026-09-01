@@ -8,6 +8,7 @@
     color: var(--moss-dark);
     font-size: 28px;
     line-height: 1.25;
+
     @include mixins.serif-heading;
   }
 
@@ -19,7 +20,7 @@
   }
 }
 
-@media (max-width: 720px) {
+@media (width <= 720px) {
   .content {
     padding: 4px 24px 40px;
 

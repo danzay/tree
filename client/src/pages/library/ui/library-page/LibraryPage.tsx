@@ -23,7 +23,7 @@ export function LibraryPage() {
   const page = useLibraryPage(libraryItems.items)
 
   const openItem = (item: LibraryItem) => {
-    navigate(getLibraryItemPath(item.id))
+    void navigate(getLibraryItemPath(item.id))
   }
 
   const openItemMenu = (item: LibraryItem) => {

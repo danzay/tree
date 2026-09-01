@@ -4,6 +4,7 @@ import { Button } from 'react-aria-components/Button'
 import { FieldError, Input, Label, TextField } from 'react-aria-components/TextField'
 import { Form } from 'react-aria-components/Form'
 import { AuthErrorMessage, useLoginMutation } from '@/features/auth'
+import { getFormDataString } from '@/shared/lib/form-data/getFormDataString'
 import styles from './LoginForm.module.scss'
 
 export function LoginForm() {
@@ -17,8 +18,8 @@ export function LoginForm() {
     event.preventDefault()
     const data = new FormData(event.currentTarget)
     loginMutation.mutate({
-      email: String(data.get('email') ?? ''),
-      password: String(data.get('password') ?? ''),
+      email: getFormDataString(data, 'email'),
+      password: getFormDataString(data, 'password'),
     })
   }
 

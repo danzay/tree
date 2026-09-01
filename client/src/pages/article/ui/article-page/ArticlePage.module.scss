@@ -39,7 +39,7 @@
   border: 1px solid var(--border);
   border-radius: 14px;
   background: var(--paper);
-  box-shadow: 0 7px 20px rgba(30, 43, 32, 0.08);
+  box-shadow: 0 7px 20px rgb(30 43 32 / 8%);
 }
 
 .state {
@@ -60,13 +60,13 @@
   }
 }
 
-@media (max-width: 1060px) {
+@media (width <= 1060px) {
   .layout {
     grid-template-columns: 1fr;
   }
 }
 
-@media (max-width: 720px) {
+@media (width <= 720px) {
   .page {
     width: min(100% - 24px, 680px);
   }

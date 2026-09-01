@@ -5,7 +5,7 @@
   border: 1px solid var(--border);
   border-radius: 16px;
   background: var(--paper);
-  box-shadow: 0 8px 24px rgba(30, 43, 32, 0.08);
+  box-shadow: 0 8px 24px rgb(30 43 32 / 8%);
 }
 
 .heading {
@@ -27,6 +27,7 @@
     margin: 0;
     color: var(--moss-dark);
     font-size: 30px;
+
     @include mixins.serif-heading;
   }
 
@@ -34,6 +35,7 @@
     color: var(--moss-dark);
     font-size: 34px;
     font-weight: 500;
+
     @include mixins.serif-heading;
   }
 }
@@ -88,7 +90,7 @@
   }
 }
 
-@media (max-width: 720px) {
+@media (width <= 720px) {
   .card {
     padding: 24px 20px;
   }

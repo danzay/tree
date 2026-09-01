@@ -21,12 +21,13 @@
     padding: 11px 13px;
     border: 1px solid var(--border);
     border-radius: 12px;
-    background: rgba(255, 253, 247, 0.88);
+    background: rgb(255 253 247 / 88%);
     color: var(--ink);
 
     &:focus {
       border-color: var(--moss);
       outline: none;
+
       @include mixins.focus-ring(0);
     }
   }

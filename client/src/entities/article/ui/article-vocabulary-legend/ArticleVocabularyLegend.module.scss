@@ -1,5 +1,4 @@
 @use '@/shared/styles/mixins';
-
 @include mixins.level-background-classes;
 
 .legend {
@@ -10,6 +9,7 @@
     margin: 0;
     color: var(--moss-dark);
     font-size: 20px;
+
     @include mixins.serif-heading;
   }
 

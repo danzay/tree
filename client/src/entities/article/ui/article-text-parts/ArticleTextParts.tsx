@@ -13,6 +13,7 @@ export function ArticleTextParts({ block, selectedSenseId }: ArticleTextPartsPro
 
   block.highlights.forEach((highlight) => {
     const hasInvalidRange = highlight.start < position || highlight.end > block.text.length
+
     if (hasInvalidRange) {
       return
     }

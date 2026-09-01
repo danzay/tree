@@ -7,6 +7,7 @@ export const APP_ROUTES = [
     requiresAuth: false,
     Component: lazy(async () => {
       const { LoginPage } = await import('@/pages/login')
+
       return { default: LoginPage }
     }),
   },
@@ -15,6 +16,7 @@ export const APP_ROUTES = [
     requiresAuth: true,
     Component: lazy(async () => {
       const { AccountPage } = await import('@/pages/account')
+
       return { default: AccountPage }
     }),
   },
@@ -23,6 +25,7 @@ export const APP_ROUTES = [
     requiresAuth: true,
     Component: lazy(async () => {
       const { DictionaryPage } = await import('@/pages/dictionary')
+
       return { default: DictionaryPage }
     }),
   },
@@ -31,6 +34,7 @@ export const APP_ROUTES = [
     requiresAuth: true,
     Component: lazy(async () => {
       const { LibraryPage } = await import('@/pages/library')
+
       return { default: LibraryPage }
     }),
   },
@@ -39,6 +43,7 @@ export const APP_ROUTES = [
     requiresAuth: true,
     Component: lazy(async () => {
       const { ArticlePage } = await import('@/pages/article')
+
       return { default: ArticlePage }
     }),
   },
@@ -47,6 +52,7 @@ export const APP_ROUTES = [
     requiresAuth: true,
     Component: lazy(async () => {
       const { ProgressPage } = await import('@/pages/progress')
+
       return { default: ProgressPage }
     }),
   },

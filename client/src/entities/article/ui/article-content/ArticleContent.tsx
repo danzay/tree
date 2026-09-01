@@ -16,13 +16,13 @@ export function ArticleContent({
   onTextSelect,
   onWordSelect,
 }: ArticleContentProps) {
-  const { handleClick, handlePointerUp } = useArticleContentInteractions({
+  const { handlePointerUp } = useArticleContentInteractions({
     onTextSelect,
     onWordSelect,
   })
 
   return (
-    <div className={styles.content} onClick={handleClick} onPointerUp={handlePointerUp}>
+    <div className={styles.content} onPointerUp={handlePointerUp}>
       {blocks.map((block) => (
         <ArticleBlockText block={block} key={block.position} selectedSenseId={selectedSenseId} />
       ))}

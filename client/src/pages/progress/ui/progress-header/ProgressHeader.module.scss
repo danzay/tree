@@ -17,6 +17,7 @@
     color: var(--moss-dark);
     font-size: clamp(42px, 5vw, 62px);
     line-height: 1.08;
+
     @include mixins.serif-heading;
   }
 

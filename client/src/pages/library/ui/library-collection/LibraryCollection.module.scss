@@ -19,6 +19,7 @@
 
   h2 {
     margin: 0;
+
     @include mixins.serif-heading;
   }
 
@@ -27,7 +28,7 @@
   }
 }
 
-@media (max-width: 980px) {
+@media (width <= 980px) {
   .list {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -37,7 +38,7 @@
   }
 }
 
-@media (max-width: 720px) {
+@media (width <= 720px) {
   .list {
     grid-template-columns: 1fr;
   }

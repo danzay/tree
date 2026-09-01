@@ -5,6 +5,7 @@ import { Button } from 'react-aria-components/Button'
 import { Form } from 'react-aria-components/Form'
 import { FieldError, Input, Label, TextField } from 'react-aria-components/TextField'
 import { AuthErrorMessage, useInvitationMutation } from '@/features/auth'
+import { getFormDataString } from '@/shared/lib/form-data/getFormDataString'
 import { InvitationResult } from '../invitation-result/InvitationResult'
 import styles from './InvitationSettings.module.scss'
 
@@ -19,7 +20,7 @@ export function InvitationSettings() {
   const handleInvitation: NonNullable<ComponentProps<typeof Form>['onSubmit']> = (event) => {
     event.preventDefault()
     const data = new FormData(event.currentTarget)
-    invitationMutation.mutate(String(data.get('email') ?? ''))
+    invitationMutation.mutate(getFormDataString(data, 'email'))
     setCopied(false)
   }
 

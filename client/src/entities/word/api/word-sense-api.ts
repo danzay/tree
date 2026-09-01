@@ -3,6 +3,7 @@ import type { StatsResponse, VocabularySense, WordsResponse, WordSenseQuery } fr
 
 export async function getVocabularyStats(signal?: AbortSignal) {
   const response = await API_CLIENT.get<StatsResponse>('/stats', { signal })
+
   return response.data
 }
 

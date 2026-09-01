@@ -8,7 +8,7 @@
   border: 1px solid var(--border);
   border-radius: 12px;
   background: var(--paper);
-  box-shadow: 0 4px 11px rgba(30, 43, 32, 0.08);
+  box-shadow: 0 4px 11px rgb(30 43 32 / 8%);
   transition:
     transform 170ms ease,
     box-shadow 170ms ease,
@@ -16,7 +16,7 @@
 
   &:hover {
     border-color: color.adjust(#d9d2c7, $lightness: -8%);
-    box-shadow: 0 9px 22px rgba(30, 43, 32, 0.12);
+    box-shadow: 0 9px 22px rgb(30 43 32 / 12%);
     transform: translateY(-2px);
   }
 }
@@ -51,6 +51,7 @@
   margin-top: 10px;
   font-size: 20px;
   line-height: 1.25;
+
   @include mixins.serif-heading;
 }
 
@@ -146,7 +147,7 @@
   }
 }
 
-@media (max-width: 720px) {
+@media (width <= 720px) {
   .list {
     .main {
       grid-template-columns: 1fr;

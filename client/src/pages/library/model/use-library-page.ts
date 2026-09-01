@@ -32,6 +32,7 @@ export function useLibraryPage(items: LibraryItem[]) {
       const matchesTitle = normalizedTitle.includes(normalizedQuery)
       const matchesLibraryItemType = normalizedType.includes(normalizedQuery)
       const matchesQuery = hasEmptyQuery || matchesTitle || matchesLibraryItemType
+
       return matchesType && matchesQuery
     })
 
@@ -42,6 +43,7 @@ export function useLibraryPage(items: LibraryItem[]) {
 
       if (sort === TYPE_LIBRARY_ITEM_SORT) {
         const typeComparison = first.type.localeCompare(second.type)
+
         if (typeComparison !== 0) {
           return typeComparison
         }
@@ -51,6 +53,7 @@ export function useLibraryPage(items: LibraryItem[]) {
 
       const firstDate = first.lastOpenedAt ?? first.updatedAt
       const secondDate = second.lastOpenedAt ?? second.updatedAt
+
       return secondDate.localeCompare(firstDate)
     })
   }, [filter, items, query, sort])

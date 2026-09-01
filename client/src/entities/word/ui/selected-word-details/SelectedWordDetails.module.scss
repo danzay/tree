@@ -9,6 +9,7 @@
     color: var(--moss-dark);
     font-size: 30px;
     line-height: 1.2;
+
     @include mixins.serif-heading;
   }
 }

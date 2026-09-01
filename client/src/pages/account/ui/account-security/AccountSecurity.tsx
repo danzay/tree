@@ -21,7 +21,9 @@ export function AccountSecurity({ user, googleEnabled }: AccountSecurityProps) {
 
   const handleLogout = () => {
     logoutMutation.mutate(undefined, {
-      onSuccess: () => navigate(APP_ROUTE_PATHS.LOGIN, { replace: true }),
+      onSuccess: () => {
+        void navigate(APP_ROUTE_PATHS.LOGIN, { replace: true })
+      },
     })
   }
 
