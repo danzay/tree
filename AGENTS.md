@@ -32,6 +32,11 @@ These instructions apply to the entire repository. The React client lives in `cl
 
 ## TypeScript and JSX
 
+- Do not introduce deprecated library APIs or types in new or edited code. Use the
+  library's current purpose-specific replacement. React form submit handlers use
+  `SubmitEvent` when the element API accepts it. If a third-party component still
+  exposes a deprecated callback type, derive the handler from that component's
+  public prop type with `ComponentProps` instead of importing the deprecated type.
 - Avoid conditional expressions that return JSX. A one-line conditional expression is acceptable only when it remains immediately readable.
 - Split compound conditions into named booleans. Extract any subcondition that performs calculation or needs explanation.
 - Never put a complex condition directly in JSX. Compute and name display booleans such as `withTitle`, `withDescription`, or `isEmpty` above the return statement.

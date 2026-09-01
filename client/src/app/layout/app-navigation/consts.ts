@@ -18,5 +18,3 @@ export const NAVIGATION_ITEMS = [
     translationKey: 'navigation.progress',
   },
 ] as const
-
-export const PROFILE_INITIALS = 'LS'

@@ -1,0 +1,74 @@
+@use '@/shared/styles/mixins';
+
+.card {
+  display: grid;
+  gap: 20px;
+  padding: 26px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--paper);
+
+  h2 {
+    margin: 5px 0 0;
+    color: var(--moss-dark);
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 26px;
+    font-weight: 500;
+  }
+}
+
+.eyebrow {
+  margin: 0;
+  color: var(--moss);
+  font-size: 12px;
+  font-weight: 750;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding-top: 18px;
+  border-top: 1px solid var(--border);
+
+  p {
+    margin: 5px 0 0;
+    color: var(--muted);
+    font-size: 14px;
+  }
+}
+
+.danger {
+  min-height: 40px;
+  padding: 8px 14px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: transparent;
+  cursor: pointer;
+  white-space: nowrap;
+
+  &[data-focus-visible] {
+    @include mixins.focus-ring(4px);
+  }
+}
+
+.danger {
+  border-color: rgba(155, 63, 63, 0.35);
+  color: #8c3737;
+}
+
+.error {
+  margin: 0;
+  color: #9b3f3f;
+  font-size: 14px;
+}
+
+@media (max-width: 620px) {
+  .row {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}

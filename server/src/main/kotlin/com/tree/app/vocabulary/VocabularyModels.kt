@@ -1,5 +1,7 @@
 package com.tree.app.vocabulary
 
+import java.util.UUID
+
 data class TranslationResponse(
     val language: String,
     val text: String,
@@ -61,11 +63,11 @@ data class WordSearchQuery(
 interface VocabularyReader {
     fun checkHealth()
 
-    fun getStats(): StatsResponse
+    fun getStats(userId: UUID): StatsResponse
 
-    fun search(query: WordSearchQuery): WordsResponse
+    fun search(userId: UUID, query: WordSearchQuery): WordsResponse
 
-    fun findById(id: Long, language: String): VocabularySenseResponse?
+    fun findById(userId: UUID, id: Long, language: String): VocabularySenseResponse?
 }
 
 internal data class VocabularySenseRow(

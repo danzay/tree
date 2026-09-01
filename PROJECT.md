@@ -1,7 +1,7 @@
 # Tree Project Plan
 
 Status: implementation  
-Last updated: 2026-08-16
+Last updated: 2026-09-01
 
 This document is the living implementation plan for Tree. Decisions should be
 recorded here before large implementation changes begin.
@@ -28,6 +28,8 @@ Planned product areas:
 - The Kotlin Spring Boot API lives in `server/` and owns database access.
 - Flyway has adopted the existing schema, and the first Kotlin endpoints preserve
   health, statistics, word search, and word-sense reads.
+- Spring Security now provides email/password and optional Google OIDC login,
+  PostgreSQL-backed sessions, CSRF protection, invitation controls, and user-owned data.
 - The temporary TypeScript backend and integration adapter have been removed.
 
 ## Frontend architecture decision
@@ -54,7 +56,7 @@ Selected frontend foundations:
 
 | Area          | Selection                                                             |
 | ------------- | --------------------------------------------------------------------- |
-| Routing       | React Router with hash routing for the current Vite deployment        |
+| Routing       | React Router with browser routing and server-side SPA fallback         |
 | Client state  | Zustand, colocated with the owning page or feature                    |
 | Server state  | TanStack Query with entity-owned query hooks and keys                 |
 | HTTP client   | A shared Axios instance; requests live in entity/feature API segments |
@@ -68,13 +70,10 @@ remote request state, caching, cancellation, and freshness. Entity query hooks o
 their query keys and API calls; page hooks compose those queries with page-specific
 state. The Library grid/list preference is the first persisted Zustand state.
 
-Until the Kotlin library module is implemented, library item records are stored in
-the browser under the versioned `tree.library-items.v1` local-storage key. Stored
-data is validated with Zod before it enters the Zustand entity store; missing,
-invalid, or incompatible data falls back to the initial sample catalogue. Cover
-images are stored as stable cover keys rather than generated asset URLs. This is
-temporary single-device MVP persistence and must not be treated as authenticated
-user data or synchronized storage.
+Library items and reading progress are server data owned by the authenticated
+user. They must remain in TanStack Query and must not be duplicated in local
+storage or Zustand. Cover images remain stable asset paths until object storage is
+introduced.
 
 Axios is accessed through `shared/api/api-client.ts`; pages must not create their
 own Axios instances. React Aria Components should be wrapped in `shared/ui` when a
@@ -84,6 +83,18 @@ Component files contain one React component each. Additional components must be
 moved into separate files. Non-trivial calculation and transformation helpers
 belong in a colocated `utils/` folder, with one exported utility per file and a
 filename that exactly matches the utility name.
+
+Leaf action components must not accept surrounding domain state only to decide
+whether they render. Their parent owns conditional composition and renders the
+action only when it is available. Leaf component props should describe the
+rendered action's behavior or genuine visual variants, not make the component
+silently return `null`.
+
+Do not put multi-part boolean expressions, comparisons, optional-chain fallbacks,
+negations, or ternaries directly in JSX props or conditional rendering. Compute
+derived conditions and prop values as descriptively named variables before the
+component's `return`, then pass those variables to JSX. Direct props, state values,
+constants, and simple event handlers may remain inline.
 
 Do not place SVG markup directly inside another React component. Keep static SVGs
 in standalone `.svg` asset files, and keep SVGs that need React behavior, props, or
@@ -118,6 +129,29 @@ product and maintainability choice rather than a performance-motivated rewrite.
 
 Exact supported versions of Kotlin, the JDK, Spring Boot, and dependencies must be
 chosen and pinned when implementation starts.
+
+## Authentication decision
+
+- Spring Security owns authentication and authorization.
+- Email passwords are hashed with Argon2id and are never returned to the client.
+- Optional Google login uses OIDC and stores Google's immutable `sub` identifier,
+  not an email address, as the provider identity.
+- Browser authentication uses an opaque HTTP-only, SameSite=Lax session cookie;
+  PostgreSQL-backed Spring Session supports restarts and multiple server instances.
+- State-changing browser requests require the CSRF cookie/header pair. Tokens and
+  credentials are never stored in local storage or Zustand.
+- Registration is permanently invitation-only for the current product phase.
+  Invitations are bound to an email address, single-use, expire after 24 hours,
+  and are stored only as SHA-256 hashes.
+- The first account is bootstrapped from secret environment variables, receives
+  the internal `manage_invitations` authority, and claims the existing library and
+  learning progress. Ordinary accounts have no role. Invited users receive
+  independent progress initialized as `new`, see only their own library records,
+  and retain no restriction or relationship to the inviter after registration.
+- The API exposes only the `canManageInvitations` capability to the browser. The
+  internal authority is admission control, not an account hierarchy or user badge.
+- Password reset and email verification are intentionally deferred until an email
+  delivery provider is selected.
 
 ### Why Spring Boot instead of Ktor
 
@@ -316,19 +350,20 @@ The editor library and durable annotation-anchor format remain open decisions.
    migrations.
 4. Health, statistics, word search, and word-sense reads are the first migrated
    endpoints.
-5. Authentication, OpenAPI generation, status mutations, and material analysis
-   remain future modules.
+5. Authentication and user ownership are implemented. OpenAPI generation, status
+   mutations, and material analysis remain future modules.
 
 ## Production requirements
 
 Before public deployment:
 
+- terminate traffic with HTTPS and set `SESSION_COOKIE_SECURE=true` so the session
+  cookie is never sent over an unencrypted connection;
 - use a supported LTS JDK and pinned dependency versions;
 - package the Kotlin API as a reproducible container or JVM artifact;
 - keep secrets exclusively in environment/secret management and out of Git;
 - retain `.env` in `.gitignore` and never log secret values;
-- add per-user ownership to progress, reviews, articles, highlights, and settings;
-- use secure HTTP-only authentication cookies or an equivalently secure OIDC flow;
+- complete per-user ownership for future highlights, annotations, and settings;
 - apply least-privilege database roles for migrations and runtime access;
 - add request IDs, structured logging, metrics, and centralized error reporting;
 - define liveness and readiness checks;
@@ -341,7 +376,7 @@ Before public deployment:
 
 ## Decisions still required
 
-- Authentication/OIDC provider and account-recovery flow.
+- Email-delivery provider and account-recovery flow.
 - Production hosting provider and deployment topology.
 - S3-compatible object-storage provider.
 - Editor library and stored document format.

@@ -1,0 +1,92 @@
+@use '@/shared/styles/mixins';
+
+.card {
+  display: grid;
+  gap: 20px;
+  padding: 26px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--paper);
+
+  h2 {
+    margin: 5px 0 0;
+    color: var(--moss-dark);
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 26px;
+    font-weight: 500;
+  }
+}
+
+.eyebrow {
+  margin: 0;
+  color: var(--moss);
+  font-size: 12px;
+  font-weight: 750;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+.description {
+  margin: 7px 0 0;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.form {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: end;
+  gap: 12px;
+}
+
+.field {
+  display: grid;
+  gap: 7px;
+
+  label {
+    font-size: 14px;
+    font-weight: 650;
+  }
+
+  input {
+    width: 100%;
+    min-height: 44px;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--paper);
+
+    &:focus {
+      border-color: var(--moss);
+      outline: none;
+      @include mixins.focus-ring(0);
+    }
+  }
+}
+
+.create {
+  min-height: 44px;
+  padding: 9px 15px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--moss);
+  color: white;
+  cursor: pointer;
+  font-weight: 650;
+
+  &[data-focus-visible] {
+    @include mixins.focus-ring(4px);
+  }
+}
+
+.error {
+  margin: 0;
+  color: #9b3f3f;
+  font-size: 14px;
+}
+
+@media (max-width: 620px) {
+  .form {
+    grid-template-columns: 1fr;
+  }
+}

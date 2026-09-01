@@ -5,6 +5,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
 import org.springframework.stereotype.Repository
 import java.text.Normalizer
 import java.util.Locale
+import java.util.UUID
 
 @Repository
 class VocabularyRepository(
@@ -14,7 +15,7 @@ class VocabularyRepository(
         jdbc.jdbcTemplate.queryForObject("SELECT 1", Int::class.java)
     }
 
-    override fun getStats(): StatsResponse {
+    override fun getStats(userId: UUID): StatsResponse {
         val summary = jdbc.jdbcTemplate.queryForMap(
             """
             SELECT count(*) AS senses,
@@ -30,7 +31,14 @@ class VocabularyRepository(
                 "SELECT cefr_level AS key, count(*) AS count FROM senses GROUP BY cefr_level",
             ),
             byStatus = countByKey(
-                "SELECT status AS key, count(*) AS count FROM sense_progress GROUP BY status",
+                """
+                SELECT COALESCE(user_progress.status, 'new') AS key, count(*) AS count
+                FROM senses sense
+                LEFT JOIN user_sense_progress user_progress
+                  ON user_progress.sense_id = sense.id AND user_progress.user_id = :userId
+                GROUP BY COALESCE(user_progress.status, 'new')
+                """.trimIndent(),
+                mapOf("userId" to userId),
             ),
             reconciliation = countByKey(
                 """
@@ -40,24 +48,28 @@ class VocabularyRepository(
                 GROUP BY issue_type
                 """.trimIndent(),
             ),
-            levelProgress = getLevelProgress(),
+            levelProgress = getLevelProgress(userId),
         )
     }
 
-    private fun getLevelProgress(): List<LevelProgressResponse> = jdbc.jdbcTemplate.query(
+    private fun getLevelProgress(userId: UUID): List<LevelProgressResponse> = jdbc.query(
         """
         WITH levels(level, position) AS (
           VALUES ('A1', 1), ('A2', 2), ('B1', 3), ('B2', 4), ('C1', 5), ('C2', 6)
         )
         SELECT levels.level,
                count(s.id) AS total,
-               count(s.id) FILTER (WHERE sp.status IN ('known', 'learned')) AS known
+               count(s.id) FILTER (
+                 WHERE COALESCE(user_progress.status, 'new') IN ('known', 'learned')
+               ) AS known
         FROM levels
         LEFT JOIN senses s ON s.cefr_level = levels.level
-        LEFT JOIN sense_progress sp ON sp.sense_id = s.id
+        LEFT JOIN user_sense_progress user_progress
+          ON user_progress.sense_id = s.id AND user_progress.user_id = :userId
         GROUP BY levels.level, levels.position
         ORDER BY levels.position
         """.trimIndent(),
+        mapOf("userId" to userId),
     ) { resultSet, _ ->
         val total = resultSet.getLong("total")
         val known = resultSet.getLong("known")
@@ -69,8 +81,9 @@ class VocabularyRepository(
         )
     }
 
-    override fun search(query: WordSearchQuery): WordsResponse {
+    override fun search(userId: UUID, query: WordSearchQuery): WordsResponse {
         val parameters = MapSqlParameterSource()
+            .addValue("userId", userId)
             .addValue("limit", query.limit)
             .addValue("offset", query.offset)
         val filters = mutableListOf<String>()
@@ -95,7 +108,7 @@ class VocabularyRepository(
         }
         query.status?.let {
             parameters.addValue("status", it)
-            filters += "sp.status = :status"
+            filters += "COALESCE(user_progress.status, 'new') = :status"
         }
         query.partOfSpeech?.let {
             parameters.addValue("partOfSpeech", it)
@@ -133,10 +146,10 @@ class VocabularyRepository(
         )
     }
 
-    override fun findById(id: Long, language: String): VocabularySenseResponse? {
+    override fun findById(userId: UUID, id: Long, language: String): VocabularySenseResponse? {
         val rows = jdbc.query(
             "$SELECT_WORD_FIELDS WHERE s.id = :id",
-            mapOf("id" to id),
+            mapOf("id" to id, "userId" to userId),
             WORD_ROW_MAPPER,
         )
         return enrich(rows, language).firstOrNull()
@@ -231,6 +244,11 @@ class VocabularyRepository(
             resultSet.getString("key") to resultSet.getLong("count")
         }.associate { it }
 
+    private fun countByKey(sql: String, parameters: Map<String, Any>): Map<String, Long> =
+        jdbc.query(sql, parameters) { resultSet, _ ->
+            resultSet.getString("key") to resultSet.getLong("count")
+        }.associate { it }
+
     private fun normalizeHeadword(word: String): String =
         Normalizer.normalize(word, Normalizer.Form.NFKC)
             .trim()
@@ -258,11 +276,12 @@ class VocabularyRepository(
                    s.transcription,
                    s.cefr_level AS level,
                    s.review_status,
-                   sp.status,
+                   COALESCE(user_progress.status, 'new') AS status,
                    count(*) OVER() AS total
             FROM senses s
             JOIN headwords h ON h.id = s.headword_id
-            JOIN sense_progress sp ON sp.sense_id = s.id
+            LEFT JOIN user_sense_progress user_progress
+              ON user_progress.sense_id = s.id AND user_progress.user_id = :userId
         """
     }
 }

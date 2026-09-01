@@ -1,0 +1,67 @@
+@use '@/shared/styles/mixins';
+
+.form {
+  display: grid;
+  gap: 18px;
+}
+
+.field {
+  display: grid;
+  gap: 7px;
+
+  label {
+    color: var(--ink);
+    font-size: 14px;
+    font-weight: 650;
+  }
+
+  input {
+    width: 100%;
+    min-height: 48px;
+    padding: 11px 13px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: rgba(255, 253, 247, 0.88);
+    color: var(--ink);
+
+    &:focus {
+      border-color: var(--moss);
+      outline: none;
+      @include mixins.focus-ring(0);
+    }
+  }
+
+  [data-rac][slot='errorMessage'] {
+    color: #9b3f3f;
+    font-size: 12px;
+  }
+}
+
+.error {
+  margin: -4px 0 0;
+  color: #9b3f3f;
+  font-size: 14px;
+}
+
+.submit {
+  min-height: 48px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--moss);
+  color: white;
+  cursor: pointer;
+  font-weight: 700;
+
+  &[data-hovered] {
+    background: var(--moss-dark);
+  }
+
+  &[data-focus-visible] {
+    @include mixins.focus-ring(4px);
+  }
+
+  &[data-disabled] {
+    cursor: wait;
+    opacity: 0.65;
+  }
+}

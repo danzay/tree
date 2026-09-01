@@ -1,5 +1,7 @@
 package com.tree.app.library
 
+import java.util.UUID
+
 data class LibraryItemQuery(
     val search: String?,
     val type: String?,
@@ -43,7 +45,7 @@ data class LibraryItemDetailResponse(
 )
 
 interface LibraryReader {
-    fun list(query: LibraryItemQuery): List<LibraryItemSummaryResponse>
+    fun list(userId: UUID, query: LibraryItemQuery): List<LibraryItemSummaryResponse>
 
-    fun findById(id: Long): LibraryItemDetailResponse?
+    fun findById(userId: UUID, id: Long): LibraryItemDetailResponse?
 }

@@ -1,0 +1,43 @@
+.page {
+  width: min(900px, calc(100% - 48px));
+  margin: 0 auto;
+  padding: 20px 0 20px;
+}
+
+.header {
+  margin-bottom: 28px;
+
+  p {
+    margin: 0;
+    color: var(--moss);
+    font-size: 12px;
+    font-weight: 750;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  h1 {
+    margin: 7px 0 8px;
+    color: var(--moss-dark);
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: clamp(36px, 6vw, 52px);
+    font-weight: 500;
+    letter-spacing: -0.04em;
+  }
+
+  span {
+    color: var(--muted);
+  }
+}
+
+.content {
+  display: grid;
+  gap: 18px;
+}
+
+@media (max-width: 720px) {
+  .page {
+    width: min(100% - 28px, 900px);
+    padding-top: 28px;
+  }
+}

@@ -2,9 +2,11 @@ import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Button } from 'react-aria-components/Button'
 import { NavLink, useLocation } from 'react-router'
+import { useAuthUserQuery } from '@/features/auth'
 import { TreeLogo } from '@/shared/ui'
 import { APP_ROUTE_PATHS } from '../../route-consts'
-import { NAVIGATION_ITEMS, PROFILE_INITIALS } from './consts'
+import { NAVIGATION_ITEMS } from './consts'
+import { getProfileInitials } from './utils/getProfileInitials'
 import styles from './AppNavigation.module.scss'
 
 interface AppNavigationProps {
@@ -15,9 +17,13 @@ interface AppNavigationProps {
 export function AppNavigation({ expanded, onToggle }: AppNavigationProps) {
   const location = useLocation()
   const { t } = useTranslation()
+  const authQuery = useAuthUserQuery()
   const ToggleIcon = expanded ? ChevronLeft : ChevronRight
   const toggleLabel = t(expanded ? 'navigation.collapseSidebar' : 'navigation.expandSidebar')
   const isPathActive = (path: string) => location.pathname.startsWith(path)
+  const accountIsActive = isPathActive(APP_ROUTE_PATHS.ACCOUNT)
+  const profileInitials = getProfileInitials(authQuery.data?.displayName ?? '')
+  const profileLabel = authQuery.data?.displayName.trim() || t('navigation.account')
 
   return (
     <header className={styles.panel} data-expanded={expanded || undefined}>
@@ -63,13 +69,18 @@ export function AppNavigation({ expanded, onToggle }: AppNavigationProps) {
       </nav>
 
       <div className={styles.actions}>
-        <Button
+        <NavLink
           className={styles.profileButton}
-          type="button"
+          to={APP_ROUTE_PATHS.ACCOUNT}
+          aria-current={accountIsActive ? 'page' : undefined}
+          data-active={accountIsActive || undefined}
           aria-label={t('navigation.openProfile')}
         >
-          <span aria-hidden="true">{PROFILE_INITIALS}</span>
-        </Button>
+          <span className={styles.profileInitials} aria-hidden="true">
+            {profileInitials}
+          </span>
+          <span className={styles.profileLabel}>{profileLabel}</span>
+        </NavLink>
       </div>
     </header>
   )

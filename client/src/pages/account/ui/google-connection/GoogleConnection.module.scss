@@ -1,0 +1,44 @@
+@use '@/shared/styles/mixins';
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding-top: 18px;
+  border-top: 1px solid var(--border);
+
+  p {
+    margin: 5px 0 0;
+    color: var(--muted);
+    font-size: 14px;
+  }
+}
+
+.error {
+  margin: 0;
+  color: #9b3f3f;
+  font-size: 14px;
+}
+
+.button {
+  min-height: 40px;
+  padding: 8px 14px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--moss-dark);
+  cursor: pointer;
+  white-space: nowrap;
+
+  &[data-focus-visible] {
+    @include mixins.focus-ring(4px);
+  }
+}
+
+@media (max-width: 620px) {
+  .row {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}

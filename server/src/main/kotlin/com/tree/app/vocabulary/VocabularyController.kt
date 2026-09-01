@@ -1,6 +1,8 @@
 package com.tree.app.vocabulary
 
+import com.tree.app.auth.TreeUserPrincipal
 import org.springframework.http.HttpStatus
+import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
@@ -20,10 +22,12 @@ class VocabularyController(
     }
 
     @GetMapping("/stats")
-    fun stats(): StatsResponse = repository.getStats()
+    fun stats(@AuthenticationPrincipal principal: TreeUserPrincipal): StatsResponse =
+        repository.getStats(principal.id)
 
     @GetMapping("/words")
     fun words(
+        @AuthenticationPrincipal principal: TreeUserPrincipal,
         @RequestParam(name = "q", required = false) search: String?,
         @RequestParam(required = false) level: String?,
         @RequestParam(required = false) status: String?,
@@ -44,6 +48,7 @@ class VocabularyController(
             offset,
         )
         return repository.search(
+            principal.id,
             WordSearchQuery(
                 search = search,
                 level = level,
@@ -58,13 +63,14 @@ class VocabularyController(
 
     @GetMapping("/words/{id}")
     fun word(
+        @AuthenticationPrincipal principal: TreeUserPrincipal,
         @PathVariable id: Long,
         @RequestParam(defaultValue = "ru") language: String,
     ): VocabularySenseResponse {
         val normalizedLanguage = language.trim()
         require(id > 0) { "Word sense ID must be positive" }
         require(LANGUAGE_REGEX.matches(normalizedLanguage)) { "Invalid language code" }
-        return repository.findById(id, normalizedLanguage)
+        return repository.findById(principal.id, id, normalizedLanguage)
             ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Word sense not found")
     }
 

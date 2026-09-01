@@ -15,6 +15,8 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': API_PROXY_TARGET,
+      '/oauth2': API_PROXY_TARGET,
+      '/login/oauth2': API_PROXY_TARGET,
     },
   },
 })
