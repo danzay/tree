@@ -8,7 +8,9 @@ export const EN_TRANSLATIONS = {
   navigation: {
     treeHome: 'Tree home',
     primary: 'Primary navigation',
+    collapseSidebar: 'Collapse navigation',
     dictionary: 'Dictionary',
+    expandSidebar: 'Expand navigation',
     library: 'Library',
     progress: 'Progress',
     openProfile: 'Open profile',

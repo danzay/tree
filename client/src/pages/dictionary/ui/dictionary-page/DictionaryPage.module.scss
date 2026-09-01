@@ -1,12 +1,12 @@
 .page {
   width: min(1080px, calc(100% - 40px));
   margin: 0 auto;
-  padding: 58px 0 80px;
+  padding: 15px 0 20px;
 }
 
 @media (max-width: 720px) {
   .page {
     width: min(100% - 24px, 1080px);
-    padding-top: 34px;
+    padding-top: 20px;
   }
 }
