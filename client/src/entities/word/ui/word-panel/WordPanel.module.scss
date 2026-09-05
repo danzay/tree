@@ -1,4 +1,5 @@
 .panel {
+  position: relative;
   display: flex;
   flex-direction: column;
   min-height: 300px;
@@ -44,11 +45,10 @@
   background: var(--sage-soft);
   color: var(--moss-dark);
   cursor: pointer;
-  font-size: 24px;
-  line-height: 1;
   place-items: center;
 
-  &[data-hovered] {
+  &[data-hovered],
+  &[data-pressed] {
     background: var(--sage);
   }
 

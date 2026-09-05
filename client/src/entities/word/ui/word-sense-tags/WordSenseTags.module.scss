@@ -1,0 +1,36 @@
+@use '@/shared/styles/mixins';
+
+.row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.tags {
+  display: flex;
+  min-width: 0;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.tag {
+  padding: 4px 9px;
+  border-radius: 999px;
+  color: var(--moss-dark);
+  background: var(--sage-soft);
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.level {
+  color: var(--ink);
+  font-weight: 750;
+}
+
+.review {
+  color: #a33d28;
+  background: #ffe5df;
+}
+
+@include mixins.level-background-classes;

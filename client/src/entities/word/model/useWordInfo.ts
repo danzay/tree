@@ -25,6 +25,8 @@ export function useWordInfo(term: string | null): WordInfo {
   const dictionaryQuery = useQuery({
     queryKey: WORD_QUERY_KEYS.definitions(normalizedTerm),
     queryFn: hasTerm ? ({ signal }) => getDictionaryEntries(normalizedTerm, signal) : skipToken,
+    refetchOnWindowFocus: false,
+    retry: false,
   })
   const translationQuery = useQuery({
     queryKey: WORD_QUERY_KEYS.translations(normalizedTerm),

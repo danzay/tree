@@ -1,0 +1,98 @@
+.overlay {
+  position: fixed;
+  z-index: 80;
+  display: grid;
+  background: rgb(24 35 26 / 42%);
+  inset: 0;
+  place-items: end stretch;
+
+  &[data-entering] {
+    animation: overlay-in 160ms ease-out;
+  }
+
+  &[data-exiting] {
+    animation: overlay-in 120ms ease-in reverse;
+  }
+}
+
+.modal {
+  width: 100%;
+  max-height: calc(100dvh - 48px);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-bottom: 0;
+  border-radius: 20px 20px 0 0;
+  background: var(--paper);
+  box-shadow: 0 -12px 36px rgb(30 43 32 / 18%);
+
+  &[data-entering] {
+    animation: modal-in 180ms ease-out;
+  }
+
+  &[data-exiting] {
+    animation: modal-in 130ms ease-in reverse;
+  }
+}
+
+.dialog {
+  position: relative;
+  display: flex;
+  max-height: calc(100dvh - 48px);
+  flex-direction: column;
+  outline: none;
+}
+
+.content {
+  min-width: 0;
+  min-height: 0;
+  padding: 28px 24px calc(28px + env(safe-area-inset-bottom));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.close {
+  position: absolute;
+  z-index: 1;
+  top: 14px;
+  right: 14px;
+  display: grid;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--sage-soft);
+  color: var(--moss-dark);
+  cursor: pointer;
+  place-items: center;
+
+  &[data-hovered],
+  &[data-pressed] {
+    background: var(--sage);
+  }
+
+  &[data-focus-visible] {
+    outline: 3px solid var(--focus);
+    outline-offset: 2px;
+  }
+}
+
+@keyframes overlay-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes modal-in {
+  from {
+    transform: translateY(24px);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .overlay,
+  .modal {
+    animation: none;
+  }
+}

@@ -129,6 +129,38 @@ paths:
           $ref: "#/components/responses/Unauthorized"
         "404":
           $ref: "#/components/responses/NotFound"
+  /words/{id}/status:
+    put:
+      tags: [Vocabulary]
+      operationId: updateWordStatus
+      summary: Set the current user's learning status for a vocabulary sense
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+            minimum: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateWordStatusRequest"
+      responses:
+        "200":
+          description: Updated vocabulary sense.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VocabularySenseResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
   /library-items:
     get:
       tags: [Library]
@@ -461,7 +493,13 @@ components:
       enum: [A1, A2, B1, B2, C1, C2]
     LearningStatus:
       type: string
-      enum: [new, learning, reviewing, learned, known, suspended]
+      enum: [to_learn, learning, known]
+    UpdateWordStatusRequest:
+      type: object
+      required: [status]
+      properties:
+        status:
+          $ref: "#/components/schemas/LearningStatus"
     ReviewStatus:
       type: string
       enum: [imported, verified, needs_review]

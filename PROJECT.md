@@ -146,7 +146,7 @@ chosen and pinned when implementation starts.
 - The first account is bootstrapped from secret environment variables, receives
   the internal `manage_invitations` authority, and claims the existing library and
   learning progress. Ordinary accounts have no role. Invited users receive
-  independent progress initialized as `new`, see only their own library records,
+  independent progress initialized as `to_learn`, see only their own library records,
   and retain no restriction or relationship to the inviter after registration.
 - The API exposes only the `canManageInvitations` capability to the browser. The
   internal authority is admission control, not an account hierarchy or user badge.
@@ -247,18 +247,21 @@ rules belong in services/domain types, and SQL belongs in repository classes.
   current status is a derived or cached current-state view.
 - Catalogue provenance should remain available for auditing.
 
-Initial status vocabulary:
+User-facing learning status vocabulary:
 
 ```text
-NOT_STARTED
+TO_LEARN
 LEARNING
-REVIEWING
-LEARNED
 KNOWN
 ```
 
-Status names and transition rules must be reviewed before the production learning
-engine is implemented.
+`TO_LEARN` is shown in filters but has no tag on word cards. `LEARNING` means the
+user intends to learn the sense, and `KNOWN` covers both manually known and
+system-learned senses. `status_origin` distinguishes manual changes from
+system-derived state. The internal nullable `learning_stage` records `acquiring`
+or `reviewing` without creating additional user-facing statuses. Status changes
+remain append-only in `review_events` while the progress table stores current
+state.
 
 ## API boundaries
 

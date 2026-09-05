@@ -39,7 +39,7 @@ export function AppRouter() {
         ))}
         <Route element={<AuthBoundary />}>
           <Route path={APP_ROUTE_PATHS.ROOT} element={<AppShell />}>
-            <Route index element={<Navigate to={APP_ROUTE_PATHS.DICTIONARY} replace />} />
+            <Route index element={<Navigate to={APP_ROUTE_PATHS.LIBRARY} replace />} />
             {AUTHENTICATED_ROUTES.map(({ id, Component }) => (
               <Route
                 path={id}
@@ -53,7 +53,7 @@ export function AppRouter() {
             ))}
             <Route
               path={APP_ROUTE_PATHS.WILDCARD}
-              element={<Navigate to={APP_ROUTE_PATHS.DICTIONARY} replace />}
+              element={<Navigate to={APP_ROUTE_PATHS.LIBRARY} replace />}
             />
           </Route>
         </Route>

@@ -26,7 +26,7 @@ export function LoginPage() {
   ]
 
   if (authQuery.data !== null && authQuery.data !== undefined) {
-    return <Navigate to={APP_ROUTE_PATHS.DICTIONARY} replace />
+    return <Navigate to={APP_ROUTE_PATHS.LIBRARY} replace />
   }
 
   return (

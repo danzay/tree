@@ -9,7 +9,7 @@ export const EN_TRANSLATIONS = {
     treeHome: 'Tree home',
     primary: 'Primary navigation',
     collapseSidebar: 'Collapse navigation',
-    dictionary: 'Dictionary',
+    vocabulary: 'Vocabulary',
     expandSidebar: 'Expand navigation',
     library: 'Library',
     progress: 'Progress',
@@ -187,7 +187,7 @@ export const EN_TRANSLATIONS = {
     },
     vocabulary: {
       title: 'Vocabulary levels',
-      description: 'New and learning words are coloured by CEFR level.',
+      description: 'Words to learn and learning words are coloured by CEFR level.',
     },
     actions: {
       backToLibrary: 'Back to library',
@@ -199,6 +199,28 @@ export const EN_TRANSLATIONS = {
     },
   },
   word: {
+    card: {
+      noTranscription: 'No transcription',
+      unknownPartOfSpeech: 'part of speech unknown',
+      needsReview: 'needs review',
+    },
+    status: {
+      labels: {
+        to_learn: 'To learn',
+        learning: 'Learning',
+        known: 'Known',
+      },
+      actions: {
+        learning: 'Learn this word',
+        known: 'Mark as known',
+        to_learn: 'Reset progress',
+      },
+      menuLabel: 'Change learning status',
+      saving: 'Saving status…',
+      errors: {
+        update: 'Could not update learning status',
+      },
+    },
     panel: {
       label: 'Word information',
       close: 'Close word information',
@@ -233,20 +255,21 @@ export const EN_TRANSLATIONS = {
       },
     },
   },
-  dictionary: {
+  vocabulary: {
     header: {
-      eyebrow: 'Oxford vocabulary',
-      title: 'Vocabulary library',
-      description: 'Search imported word senses by CEFR level and learning status.',
+      title: 'Vocabulary',
+      description: 'All the words in your vocabulary.',
     },
     filters: {
       label: 'Vocabulary filters',
       search: 'Search',
       searchPlaceholder: 'Start typing a word…',
       level: 'Level',
-      allLevels: 'All levels',
+      allLevels: 'All',
       status: 'Status',
-      allStatuses: 'All statuses',
+      allStatuses: 'Status',
+      itemsPerPage: 'Items per page',
+      itemsPerPageOption: '{{count}} per page',
     },
     results: {
       title: 'Word senses',
@@ -256,28 +279,13 @@ export const EN_TRANSLATIONS = {
       empty: 'No matching vocabulary found.',
     },
     pagination: {
-      label: 'Dictionary pages',
+      label: 'Vocabulary pages',
       previous: 'Previous',
       next: 'Next',
       position: 'Page {{page}} of {{totalPages}}',
     },
-    card: {
-      noTranscription: 'No transcription',
-      translationReview: 'Translation needs review',
-      noDefinition: 'English definition not yet supplied.',
-      unknownPartOfSpeech: 'part of speech unknown',
-      needsReview: 'needs review',
-    },
-    status: {
-      new: 'new',
-      learning: 'learning',
-      reviewing: 'reviewing',
-      learned: 'learned',
-      known: 'known',
-      suspended: 'suspended',
-    },
     errors: {
-      vocabulary: 'Could not load vocabulary',
+      loading: 'Could not load vocabulary',
     },
   },
   progress: {

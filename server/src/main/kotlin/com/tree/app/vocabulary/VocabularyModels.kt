@@ -25,6 +25,15 @@ interface VocabularyReader {
     fun findById(userId: UUID, id: Long, language: String): VocabularySenseResponse?
 }
 
+interface VocabularyWriter {
+    fun updateStatus(
+        userId: UUID,
+        id: Long,
+        status: String,
+        language: String,
+    ): VocabularySenseResponse?
+}
+
 internal data class VocabularySenseRow(
     val id: Long,
     val word: String,

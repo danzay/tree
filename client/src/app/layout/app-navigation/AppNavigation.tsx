@@ -30,7 +30,7 @@ export function AppNavigation({ expanded, onToggle }: AppNavigationProps) {
       <div className={styles.top}>
         <NavLink
           className={styles.brand}
-          to={APP_ROUTE_PATHS.DICTIONARY}
+          to={APP_ROUTE_PATHS.LIBRARY}
           aria-label={t('navigation.treeHome')}
         >
           <span className={styles.logoFrame}>

@@ -85,13 +85,13 @@ class LibraryRepository(
                h.word,
                h.normalized_word,
                s.cefr_level,
-               COALESCE(user_progress.status, 'new') AS status
+               COALESCE(user_progress.status, 'to_learn') AS status
         FROM senses s
         JOIN headwords h ON h.id = s.headword_id
         LEFT JOIN user_sense_progress user_progress
           ON user_progress.sense_id = s.id AND user_progress.user_id = :userId
         WHERE s.cefr_level IN ('A1', 'A2', 'B1', 'B2', 'C1', 'C2')
-          AND COALESCE(user_progress.status, 'new') IN ('new', 'learning')
+          AND COALESCE(user_progress.status, 'to_learn') IN ('to_learn', 'learning')
         ORDER BY h.normalized_word, s.sense_order, s.id
         """.trimIndent(),
         mapOf("userId" to userId),

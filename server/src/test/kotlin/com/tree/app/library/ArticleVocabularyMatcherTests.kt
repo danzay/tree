@@ -23,7 +23,12 @@ class ArticleVocabularyMatcherTests {
     fun `prefers a learning sense when a spelling has multiple eligible senses`() {
         val matcher = ArticleVocabularyMatcher(
             listOf(
-                candidate(word = "rise", normalizedWord = "rise", level = "A2", status = "new"),
+                candidate(
+                    word = "rise",
+                    normalizedWord = "rise",
+                    level = "A2",
+                    status = "to_learn",
+                ),
                 candidate(word = "rise", normalizedWord = "rise", level = "B1", status = "learning"),
             ),
         )
@@ -64,7 +69,7 @@ class ArticleVocabularyMatcherTests {
         word: String,
         normalizedWord: String,
         level: String,
-        status: String = "new",
+        status: String = "to_learn",
     ) = VocabularyHighlightCandidate(
         senseId = 1,
         word = word,

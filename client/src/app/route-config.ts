@@ -21,15 +21,6 @@ export const APP_ROUTES = [
     }),
   },
   {
-    id: APP_ROUTE_IDS.DICTIONARY,
-    requiresAuth: true,
-    Component: lazy(async () => {
-      const { DictionaryPage } = await import('@/pages/dictionary')
-
-      return { default: DictionaryPage }
-    }),
-  },
-  {
     id: APP_ROUTE_IDS.LIBRARY,
     requiresAuth: true,
     Component: lazy(async () => {
@@ -54,6 +45,15 @@ export const APP_ROUTES = [
       const { ProgressPage } = await import('@/pages/progress')
 
       return { default: ProgressPage }
+    }),
+  },
+  {
+    id: APP_ROUTE_IDS.VOCABULARY,
+    requiresAuth: true,
+    Component: lazy(async () => {
+      const { VocabularyPage } = await import('@/pages/vocabulary')
+
+      return { default: VocabularyPage }
     }),
   },
 ] as const

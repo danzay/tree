@@ -1,12 +1,17 @@
 package com.tree.app.vocabulary
 
 import com.tree.api.model.HealthResponse
+import com.tree.api.model.LearningStatus
 import com.tree.api.model.StatsResponse
+import com.tree.api.model.UpdateWordStatusRequest
 import com.tree.api.model.VocabularySenseResponse
 import com.tree.api.model.WordsResponse
 import com.tree.app.auth.TreeUserPrincipal
+import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.security.core.annotation.AuthenticationPrincipal
+import org.springframework.web.bind.annotation.PutMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
@@ -18,6 +23,7 @@ import org.springframework.web.server.ResponseStatusException
 @RequestMapping("/api")
 class VocabularyController(
     private val repository: VocabularyReader,
+    private val writer: VocabularyWriter,
 ) {
     @GetMapping("/health")
     fun health(): HealthResponse {
@@ -82,6 +88,18 @@ class VocabularyController(
             ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Word sense not found")
     }
 
+    @PutMapping("/words/{id}/status")
+    fun updateWordStatus(
+        @AuthenticationPrincipal principal: TreeUserPrincipal,
+        @PathVariable id: Long,
+        @Valid @RequestBody request: UpdateWordStatusRequest,
+    ): VocabularySenseResponse {
+        require(id > 0) { "Word sense ID must be positive" }
+
+        return writer.updateStatus(principal.id, id, request.status.value, DEFAULT_LANGUAGE)
+            ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Word sense not found")
+    }
+
     private fun validateQuery(
         search: String?,
         level: String?,
@@ -103,8 +121,9 @@ class VocabularyController(
     }
 
     private companion object {
+        const val DEFAULT_LANGUAGE = "ru"
         val CEFR_LEVELS = setOf("A1", "A2", "B1", "B2", "C1", "C2")
-        val PROGRESS_STATUSES = setOf("new", "learning", "reviewing", "learned", "known", "suspended")
+        val PROGRESS_STATUSES = LearningStatus.entries.mapTo(mutableSetOf()) { it.value }
         val LANGUAGE_REGEX = Regex("^[a-z]{2,3}(-[A-Za-z0-9]+)*$")
         val PART_OF_SPEECH_REGEX = Regex("^[a-z_]+$")
     }

@@ -1,5 +1,12 @@
 import { API_CLIENT } from '@/shared/api/api-client'
-import type { StatsResponse, VocabularySense, WordsResponse, WordSenseQuery } from '../model/types'
+import type {
+  StatsResponse,
+  UpdateWordStatusRequest,
+  UpdateWordStatusVariables,
+  VocabularySense,
+  WordsResponse,
+  WordSenseQuery,
+} from '../model/types'
 
 export async function getVocabularyStats(signal?: AbortSignal) {
   const response = await API_CLIENT.get<StatsResponse>('/stats', { signal })
@@ -28,6 +35,13 @@ export async function getWordSense(id: number, signal?: AbortSignal) {
     signal,
     params: { language: 'ru' },
   })
+
+  return response.data
+}
+
+export async function updateWordStatus({ id, status }: UpdateWordStatusVariables) {
+  const request: UpdateWordStatusRequest = { status }
+  const response = await API_CLIENT.put<VocabularySense>(`/words/${id}/status`, request)
 
   return response.data
 }

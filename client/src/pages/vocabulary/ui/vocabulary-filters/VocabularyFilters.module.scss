@@ -1,0 +1,77 @@
+@use '@/shared/styles/mixins';
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 14px 20px;
+  padding: 4px 0 8px;
+}
+
+.levels {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.levelOption {
+  min-width: 42px;
+  min-height: 40px;
+  padding: 0 12px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  color: var(--ink);
+  background: color-mix(in srgb, var(--paper) 90%, transparent);
+  cursor: pointer;
+
+  &[data-selected] {
+    border-color: var(--moss);
+    background: var(--moss);
+    color: var(--paper);
+  }
+
+  &[data-hovered]:not([data-selected]) {
+    border-color: var(--sage);
+    background: var(--sage-soft);
+  }
+
+  &[data-focus-visible] {
+    @include mixins.focus-ring(1px);
+  }
+}
+
+.statusField,
+.pageSizeField {
+  display: grid;
+}
+
+.statusControl,
+.pageSizeControl {
+  position: relative;
+  display: flex;
+  min-width: 160px;
+  min-height: 40px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 11px 38px 11px 12px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: color-mix(in srgb, var(--paper) 90%, transparent);
+  color: var(--ink);
+  text-align: left;
+
+  &:focus,
+  &[data-focus-visible] {
+    border-color: var(--moss);
+
+    @include mixins.focus-ring(0);
+  }
+}
+
+.pageSizeControl {
+  min-width: 132px;
+}
+
+.label {
+  @include mixins.visually-hidden;
+}

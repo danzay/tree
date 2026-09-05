@@ -4,12 +4,14 @@ import type { DictionaryApiEntry } from './dictionary-api-types'
 import { mapDictionaryEntry } from './utils/mapDictionaryEntry'
 import type { TranslationResponse } from '../model/lexical-types'
 
+const DICTIONARY_API_TIMEOUT_MS = 5_000
+
 const DICTIONARY_API_CLIENT = axios.create({
   baseURL: 'https://api.dictionaryapi.dev/api/v2/entries/en',
   headers: {
     Accept: 'application/json',
   },
-  timeout: 10_000,
+  timeout: DICTIONARY_API_TIMEOUT_MS,
 })
 
 export async function getDictionaryEntries(term: string, signal?: AbortSignal) {

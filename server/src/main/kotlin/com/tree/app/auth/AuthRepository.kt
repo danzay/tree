@@ -155,7 +155,7 @@ class AuthRepository(
             INSERT INTO user_sense_progress (
               user_id, sense_id, status, status_origin
             )
-            SELECT :userId, sense.id, 'new', 'system'
+            SELECT :userId, sense.id, 'to_learn', 'system'
             FROM senses sense
             ON CONFLICT DO NOTHING
             """.trimIndent(),
@@ -176,10 +176,10 @@ class AuthRepository(
             """
             INSERT INTO user_sense_progress (
               user_id, sense_id, status, status_origin,
-              started_at, learned_at, last_reviewed_at, updated_at
+              started_at, learned_at, last_reviewed_at, updated_at, learning_stage
             )
             SELECT :userId, sense_id, status, status_origin,
-                   started_at, learned_at, last_reviewed_at, updated_at
+                   started_at, learned_at, last_reviewed_at, updated_at, learning_stage
             FROM sense_progress
             ON CONFLICT DO NOTHING
             """.trimIndent(),

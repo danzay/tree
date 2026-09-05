@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
+import { X } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Button } from 'react-aria-components'
-import { CLOSE_SYMBOL } from './consts'
 import styles from './WordPanel.module.scss'
 
 interface WordPanelProps {
@@ -20,7 +20,7 @@ export function WordPanel({ children, onClose, sticky = false }: WordPanelProps)
       data-sticky={sticky || undefined}
     >
       <Button className={styles.close} aria-label={t('word.panel.close')} onPress={onClose}>
-        {CLOSE_SYMBOL}
+        <X aria-hidden="true" size={20} strokeWidth={1.8} />
       </Button>
       <div className={styles.content}>{children}</div>
     </aside>

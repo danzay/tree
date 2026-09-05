@@ -12,6 +12,7 @@ import com.tree.api.model.WordsResponse
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
 import org.springframework.stereotype.Repository
+import org.springframework.transaction.annotation.Transactional
 import java.text.Normalizer
 import java.util.Locale
 import java.util.UUID
@@ -19,7 +20,7 @@ import java.util.UUID
 @Repository
 class VocabularyRepository(
     private val jdbc: NamedParameterJdbcTemplate,
-) : VocabularyReader {
+) : VocabularyReader, VocabularyWriter {
     override fun checkHealth() {
         jdbc.jdbcTemplate.queryForObject("SELECT 1", Int::class.java)
     }
@@ -41,11 +42,11 @@ class VocabularyRepository(
             ),
             byStatus = countByKey(
                 """
-                SELECT COALESCE(user_progress.status, 'new') AS key, count(*) AS count
+                SELECT COALESCE(user_progress.status, 'to_learn') AS key, count(*) AS count
                 FROM senses sense
                 LEFT JOIN user_sense_progress user_progress
                   ON user_progress.sense_id = sense.id AND user_progress.user_id = :userId
-                GROUP BY COALESCE(user_progress.status, 'new')
+                GROUP BY COALESCE(user_progress.status, 'to_learn')
                 """.trimIndent(),
                 mapOf("userId" to userId),
             ),
@@ -69,7 +70,7 @@ class VocabularyRepository(
         SELECT levels.level,
                count(s.id) AS total,
                count(s.id) FILTER (
-                 WHERE COALESCE(user_progress.status, 'new') IN ('known', 'learned')
+                 WHERE COALESCE(user_progress.status, 'to_learn') = 'known'
                ) AS known
         FROM levels
         LEFT JOIN senses s ON s.cefr_level = levels.level
@@ -117,7 +118,7 @@ class VocabularyRepository(
         }
         query.status?.let {
             parameters.addValue("status", it)
-            filters += "COALESCE(user_progress.status, 'new') = :status"
+            filters += "COALESCE(user_progress.status, 'to_learn') = :status"
         }
         query.partOfSpeech?.let {
             parameters.addValue("partOfSpeech", it)
@@ -162,6 +163,91 @@ class VocabularyRepository(
             WORD_ROW_MAPPER,
         )
         return enrich(rows, language).firstOrNull()
+    }
+
+    @Transactional
+    override fun updateStatus(
+        userId: UUID,
+        id: Long,
+        status: String,
+        language: String,
+    ): VocabularySenseResponse? {
+        val statusBefore = jdbc.query(
+            """
+            SELECT COALESCE(user_progress.status, 'to_learn') AS status
+            FROM senses sense
+            LEFT JOIN user_sense_progress user_progress
+              ON user_progress.sense_id = sense.id AND user_progress.user_id = :userId
+            WHERE sense.id = :id
+            """.trimIndent(),
+            mapOf("id" to id, "userId" to userId),
+        ) { resultSet, _ -> resultSet.getString("status") }.firstOrNull() ?: return null
+
+        jdbc.update(
+            """
+            INSERT INTO user_sense_progress (
+              user_id, sense_id, status, status_origin,
+              started_at, learned_at, last_reviewed_at, updated_at, learning_stage
+            )
+            VALUES (
+              :userId, :id, :status, 'manual',
+              CASE WHEN :status = 'learning' THEN now() END,
+              NULL,
+              NULL,
+              now(),
+              CASE WHEN :status = 'learning' THEN 'acquiring' END
+            )
+            ON CONFLICT (user_id, sense_id) DO UPDATE
+            SET status = EXCLUDED.status,
+                status_origin = 'manual',
+                started_at = CASE
+                  WHEN EXCLUDED.status = 'to_learn' THEN NULL
+                  WHEN EXCLUDED.status = 'learning'
+                    THEN COALESCE(user_sense_progress.started_at, now())
+                  ELSE user_sense_progress.started_at
+                END,
+                learned_at = CASE
+                  WHEN EXCLUDED.status IN ('to_learn', 'known') THEN NULL
+                  ELSE user_sense_progress.learned_at
+                END,
+                last_reviewed_at = CASE
+                  WHEN EXCLUDED.status = 'to_learn' THEN NULL
+                  ELSE user_sense_progress.last_reviewed_at
+                END,
+                learning_stage = CASE
+                  WHEN EXCLUDED.status <> 'learning' THEN NULL
+                  WHEN user_sense_progress.status = 'learning'
+                    THEN COALESCE(user_sense_progress.learning_stage, 'acquiring')
+                  ELSE 'acquiring'
+                END,
+                updated_at = now()
+            """.trimIndent(),
+            mapOf("id" to id, "status" to status, "userId" to userId),
+        )
+
+        if (statusBefore != status) {
+            jdbc.update(
+                """
+                INSERT INTO review_events (
+                  client_event_id, user_id, sense_id, exercise_type, result,
+                  status_before, status_after
+                )
+                VALUES (
+                  :eventId, :userId, :id, 'manual_status_change', 'manual',
+                  :statusBefore, :statusAfter
+                )
+                """.trimIndent(),
+                mapOf(
+                    "eventId" to UUID.randomUUID(),
+                    "id" to id,
+                    "statusAfter" to status,
+                    "statusBefore" to statusBefore,
+                    "userId" to userId,
+                ),
+            )
+        }
+
+        return findById(userId, id, language)
     }
 
     private fun enrich(
@@ -285,7 +371,7 @@ class VocabularyRepository(
                    s.transcription,
                    s.cefr_level AS level,
                    s.review_status,
-                   COALESCE(user_progress.status, 'new') AS status,
+                   COALESCE(user_progress.status, 'to_learn') AS status,
                    count(*) OVER() AS total
             FROM senses s
             JOIN headwords h ON h.id = s.headword_id

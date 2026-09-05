@@ -573,7 +573,7 @@ JOIN senses sense
 ON CONFLICT DO NOTHING;
 
 INSERT INTO sense_progress (sense_id, status, status_origin)
-SELECT sense.id, 'new', 'system'
+SELECT sense.id, 'to_learn', 'system'
 FROM _esl_unmatched source
 JOIN source_import_records record
   ON record.source_system = '{SOURCE_SYSTEM}' AND record.source_id = source.source_id

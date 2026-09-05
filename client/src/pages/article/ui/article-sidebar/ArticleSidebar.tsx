@@ -1,8 +1,8 @@
 import { ArticleCover } from '@/entities/article'
 import type { LibraryItem } from '@/entities/library-item'
 import {
+  ResponsiveWordPanel,
   SelectedWordDetails,
-  WordPanel,
   WordPanelContent,
   type VocabularySense,
   type WordInfo,
@@ -31,22 +31,22 @@ export function ArticleSidebar({
 }: ArticleSidebarProps) {
   if (selectedText) {
     return (
-      <WordPanel sticky onClose={onWordClose}>
+      <ResponsiveWordPanel sticky onClose={onWordClose}>
         <SelectedWordDetails wordInfo={wordInfo} text={selectedText} />
-      </WordPanel>
+      </ResponsiveWordPanel>
     )
   }
 
   if (selectedSenseId !== null) {
     return (
-      <WordPanel sticky onClose={onWordClose}>
+      <ResponsiveWordPanel sticky onClose={onWordClose}>
         <WordPanelContent
           error={wordError}
           loading={wordLoading}
           wordInfo={wordInfo}
           sense={wordSense}
         />
-      </WordPanel>
+      </ResponsiveWordPanel>
     )
   }
 

@@ -41,13 +41,14 @@ export const CefrLevel = {
 export type LearningStatus = (typeof LearningStatus)[keyof typeof LearningStatus]
 
 export const LearningStatus = {
-  new: 'new',
+  to_learn: 'to_learn',
   learning: 'learning',
-  reviewing: 'reviewing',
-  learned: 'learned',
   known: 'known',
-  suspended: 'suspended',
 } as const
+
+export type UpdateWordStatusRequest = {
+  status: LearningStatus
+}
 
 export type ReviewStatus = (typeof ReviewStatus)[keyof typeof ReviewStatus]
 

@@ -1,20 +1,20 @@
 export const APP_ROUTE_IDS = {
   ACCOUNT: 'account',
-  DICTIONARY: 'dictionary',
   LIBRARY: 'library',
   LIBRARY_ITEM: 'library/:itemId',
-  PROGRESS: 'progress',
   LOGIN: 'login',
+  PROGRESS: 'progress',
+  VOCABULARY: 'vocabulary',
 } as const
 
 export const APP_ROUTE_PATHS = {
   ROOT: '/',
   ACCOUNT: `/${APP_ROUTE_IDS.ACCOUNT}`,
-  DICTIONARY: `/${APP_ROUTE_IDS.DICTIONARY}`,
   LIBRARY: `/${APP_ROUTE_IDS.LIBRARY}`,
   LIBRARY_ITEM: `/${APP_ROUTE_IDS.LIBRARY_ITEM}`,
-  PROGRESS: `/${APP_ROUTE_IDS.PROGRESS}`,
   LOGIN: `/${APP_ROUTE_IDS.LOGIN}`,
+  PROGRESS: `/${APP_ROUTE_IDS.PROGRESS}`,
+  VOCABULARY: `/${APP_ROUTE_IDS.VOCABULARY}`,
   WILDCARD: '*',
 } as const
 

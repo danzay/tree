@@ -19,7 +19,7 @@ export function WordLexicalResults({
   translationFallback,
 }: WordLexicalResultsProps) {
   const { t } = useTranslation()
-  const unknownLabel = t('dictionary.card.unknownPartOfSpeech')
+  const unknownLabel = t('word.card.unknownPartOfSpeech')
   const groups = getPartOfSpeechGroups(wordInfo, partOfSpeechHints, unknownLabel)
   const withGroups = groups.length > 0
   const withTabs = groups.length > 1

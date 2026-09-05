@@ -1,6 +1,10 @@
 package com.tree.app.vocabulary
 
+import com.tree.api.model.CefrLevel
+import com.tree.api.model.LearningStatus
+import com.tree.api.model.ReviewStatus
 import com.tree.api.model.StatsResponse
+import com.tree.api.model.UpdateWordStatusRequest
 import com.tree.api.model.VocabularySenseResponse
 import com.tree.api.model.WordsResponse
 import com.tree.app.auth.MANAGE_INVITATIONS_AUTHORITY
@@ -11,8 +15,8 @@ import kotlin.test.assertFailsWith
 import java.util.UUID
 
 class VocabularyControllerTests {
-    private val reader = RecordingVocabularyReader()
-    private val controller = VocabularyController(reader)
+    private val repository = RecordingVocabularyRepository()
+    private val controller = VocabularyController(repository, repository)
 
     @Test
     fun `passes validated search values to the repository`() {
@@ -27,9 +31,9 @@ class VocabularyControllerTests {
             offset = 0,
         )
 
-        assertEquals("sight", reader.lastQuery?.search)
-        assertEquals("B1", reader.lastQuery?.level)
-        assertEquals(20, reader.lastQuery?.limit)
+        assertEquals("sight", repository.lastQuery?.search)
+        assertEquals("B1", repository.lastQuery?.level)
+        assertEquals(20, repository.lastQuery?.limit)
     }
 
     @Test
@@ -47,6 +51,19 @@ class VocabularyControllerTests {
             )
         }
     }
+
+    @Test
+    fun `updates status for the current user`() {
+        controller.updateWordStatus(
+            principal = TEST_PRINCIPAL,
+            id = 42,
+            request = UpdateWordStatusRequest(LearningStatus.known),
+        )
+
+        assertEquals(TEST_USER_ID, repository.updatedUserId)
+        assertEquals(42, repository.updatedId)
+        assertEquals("known", repository.updatedStatus)
+    }
 }
 
 private val TEST_USER_ID: UUID = UUID.fromString("00000000-0000-0000-0000-000000000001")
@@ -60,8 +77,11 @@ private val TEST_PRINCIPAL = TreeUserPrincipal(
     enabled = true,
 )
 
-private class RecordingVocabularyReader : VocabularyReader {
+private class RecordingVocabularyRepository : VocabularyReader, VocabularyWriter {
     var lastQuery: WordSearchQuery? = null
+    var updatedId: Long? = null
+    var updatedStatus: String? = null
+    var updatedUserId: UUID? = null
 
     override fun checkHealth() = Unit
 
@@ -75,4 +95,29 @@ private class RecordingVocabularyReader : VocabularyReader {
     }
 
     override fun findById(userId: UUID, id: Long, language: String): VocabularySenseResponse? = null
+
+    override fun updateStatus(
+        userId: UUID,
+        id: Long,
+        status: String,
+        language: String,
+    ): VocabularySenseResponse? {
+        updatedId = id
+        updatedStatus = status
+        updatedUserId = userId
+
+        return VocabularySenseResponse(
+            id = id.toString(),
+            word = "sight",
+            definition = null,
+            transcription = null,
+            level = CefrLevel.B1,
+            reviewStatus = ReviewStatus.verified,
+            status = LearningStatus.forValue(status),
+            partsOfSpeech = emptyList(),
+            translations = emptyList(),
+            collocations = emptyList(),
+            catalogueLevels = emptyList(),
+        )
+    }
 }
